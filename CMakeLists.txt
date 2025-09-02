@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.16)
 project(bits VERSION 1.0.0 LANGUAGES CXX)
 
 add_library(bits INTERFACE)
-add_library(bits::bits ALIAS mylib)
+add_library(bits::bits ALIAS bits)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
