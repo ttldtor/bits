@@ -5,15 +5,16 @@
 
 #include <bits/bits.hpp>
 #include <cstdint>
+#include <cstddef>
 #include <limits>
 
 using org::ttldtor::bits::sal;
 using org::ttldtor::bits::sar;
 
 template <typename T>
-constexpr size_t bitWidth() {
+constexpr std::size_t bitWidth() {
   using U = std::make_unsigned_t<T>;
-  return static_cast<size_t>(std::numeric_limits<U>::digits);
+  return static_cast<std::size_t>(std::numeric_limits<U>::digits);
 }
 
 TEST_CASE("sal - basic invariants") {
