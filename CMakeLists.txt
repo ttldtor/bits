@@ -6,6 +6,7 @@ project(bits VERSION 1.0.0 LANGUAGES CXX)
 
 add_library(bits INTERFACE)
 add_library(bits::bits ALIAS bits)
+add_library(org::ttldtor::bits::bits ALIAS bits)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -18,6 +19,21 @@ install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets)
 install(EXPORT ${PROJECT_NAME}Targets
     FILE ${PROJECT_NAME}Config.cmake
-    NAMESPACE mylib::
+    NAMESPACE bits::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
+
+if (NOT DEFINED ORG_TTLDTOR_BITS_IS_ROOT_PROJECT)
+    if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+        set(ORG_TTLDTOR_BITS_IS_ROOT_PROJECT ON)
+        message(STATUS "CMake version: ${CMAKE_VERSION}")
+    else ()
+        set(ORG_TTLDTOR_BITS_ROOT_PROJECT OFF)
+    endif ()
+endif ()
+
+option(ORG_TTLDTOR_BITS_BUILD_UNIT_TESTS "Build tests" ${ORG_TTLDTOR_BITS_IS_ROOT_PROJECT})
+if (ORG_TTLDTOR_BITS_BUILD_UNIT_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
