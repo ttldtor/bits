@@ -1,19 +1,5 @@
 ﻿-- Copyright (c) 2025 ttldtor.
 -- SPDX-License-Identifier: BSL-1.0
-
-package("bits")
-    set_kind("library", {headeronly = true})
-    set_homepage("https://github.com/ttldtor/bits")
-    set_description("Library for bit manipulation")
-    set_license("BSL-1.0")
-
-    add_urls("https://github.com/ttldtor/bits.git")
-
-    on_install(function (package)
-        os.cp("include/bits", package:installdir("include"))
-    end)
-package_end()
-
 add_rules("mode.debug", "mode.release")
 
 target("bits")

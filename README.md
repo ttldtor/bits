@@ -7,31 +7,48 @@ Library for bit manipulation.
 ### xmake
 
 ```lua
-add_requires("bits default", { 
-    urls = "https://github.com/ttldtor/bits.git" 
-})
+add_rules("mode.debug", "mode.release")
 
-target("myapp")
+add_repositories("ttldtor https://github.com/ttldtor/xmake-repo.git")
+add_requires("bits 0.1.0")
+
+target("test_bits")
     set_kind("binary")
-    add_files("src/main.cpp")
     add_packages("bits")
+    add_files("src/*.cpp")
+    set_languages("c++20")
 ```
 
 ### CMake
 
 ```cmake
 cmake_minimum_required(VERSION 3.16)
-project(myapp LANGUAGES CXX)
+project(test_bits LANGUAGES CXX)
 
 include(FetchContent)
 FetchContent_Declare(
   bits
   GIT_REPOSITORY https://github.com/ttldtor/bits.git
-  GIT_TAG        default
+  GIT_TAG        v0.1.0
 )
 FetchContent_MakeAvailable(bits)
 
-add_executable(myapp main.cpp)
-target_link_libraries(myapp PRIVATE bits)
+add_executable(${PROJECT_NAME} main.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE bits)
 ```
 
+### Code
+
+```c++
+#include <iostream>
+#include <bits/bits.hpp>
+
+using namespace org::ttldtor::bits;
+
+int main(int argc, char** argv) {
+    std::cout << "hello world!" << std::endl;
+    std::cout << shl(-5, 4) << std::endl;
+
+    return 0;
+}
+```
