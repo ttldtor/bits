@@ -186,7 +186,7 @@ template <std::integral V, std::integral S>
 static constexpr V shr(V value, S shift) noexcept;
 
 /**
- * Performs a left logical bit shift operation.
+ * Performs a left logical bit shift operation (shl).
  *
  * The result of the shift will be of the same type as the `value` being shifted.
  * If the shift is a negative number of bits, then a @ref ::shr() "right logical shift" will be performed.
@@ -260,6 +260,7 @@ static constexpr V shl(V value, S shift) noexcept {
  */
 template <std::integral V, std::integral S>
 static constexpr V rightLogicalShift(V value, S shift) noexcept {
+  using UnsignedValue = std::make_unsigned_t<V>;
   using UnsignedShift = std::make_unsigned_t<S>;
 
   if constexpr (std::is_signed_v<S>) {
@@ -281,7 +282,7 @@ static constexpr V rightLogicalShift(V value, S shift) noexcept {
     return V{0};
   }
 
-  return static_cast<V>(static_cast<UnsignedShift>(value) >> unsignedShift);
+  return static_cast<V>(static_cast<UnsignedValue>(value) >> unsignedShift);
 }
 
 /**
