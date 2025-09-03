@@ -10,7 +10,7 @@ package("bits")
     add_urls("https://github.com/ttldtor/bits.git")
 
     on_install(function (package)
-        os.cp("include", package:installdir())
+        os.cp("include/bits", package:installdir("include"))
     end)
 package_end()
 
