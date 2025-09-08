@@ -57,9 +57,7 @@ TEST_CASE("bench_sal_sar_vs_builtin") {
        .unit("op")
        .batch(N)
        .warmup(10)
-#if defined(WIN32)
        .minEpochTime(150ms)
-#endif
        .relative(false)
        .performanceCounters(true);
 
