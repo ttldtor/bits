@@ -20,12 +20,12 @@ TEST_CASE("bench_sal_sar_vs_builtin") {
   constexpr size_t N = 1u << 15;
 
   std::mt19937_64 rng{0xB00B00};
-  // Для сравнения с builtin << используем беззнаковые типы и неотрицательные сдвиги
+  // For comparison with builtin << we use unsigned types and non-negative shifts
   std::uniform_int_distribution<uint32_t> u32dist{0u, 0x7FFF'FFFFu};
   std::uniform_int_distribution<uint64_t> u64dist{0ull, (1ull << 50)};
   std::uniform_int_distribution<unsigned> shldist{0u, 63u};
 
-  // Для сравнения с builtin >> используем знаковые типы и неотрицательные сдвиги
+  // For comparison with builtin >> we use signed types and non-negative shifts
   std::uniform_int_distribution<int32_t> s32dist{-(1 << 29), (1 << 29)};
   std::uniform_int_distribution<int64_t> s64dist{-(1ll << 50), (1ll << 50)};
   std::uniform_int_distribution<unsigned> shrdist{0u, 63u};
