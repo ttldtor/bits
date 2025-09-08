@@ -20,7 +20,11 @@ add_executable(bits_tests
     bits.cpp
 )
 
-target_compile_features(bits_tests PRIVATE cxx_std_20)
+set_target_properties(bits_tests PROPERTIES
+        CXX_STANDARD 20
+        CXX_EXTENSIONS OFF
+)
+
 target_link_libraries(bits_tests PRIVATE bits::bits)
 target_include_directories(bits_tests PRIVATE ${doctest_SOURCE_DIR})
 
@@ -31,7 +35,11 @@ add_executable(bits_bench
         bench.cpp
 )
 
-target_compile_features(bits_bench PRIVATE cxx_std_20)
+set_target_properties(bits_bench PROPERTIES
+        CXX_STANDARD 20
+        CXX_EXTENSIONS OFF
+)
+
 target_link_libraries(bits_bench PRIVATE bits::bits nanobench)
 target_include_directories(bits_bench PRIVATE ${doctest_SOURCE_DIR})
 
