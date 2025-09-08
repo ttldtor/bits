@@ -58,7 +58,6 @@ TEST_CASE("bench_sal_sar_vs_builtin") {
     .batch(N)
     .warmup(10)
     .minEpochTime(150ms)
-    .minEpochIterations(500'000)
     .relative(false)
     .performanceCounters(true);
 
