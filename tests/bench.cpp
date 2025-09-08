@@ -52,78 +52,67 @@ TEST_CASE("bench_sal_sar_vs_builtin") {
     shr64[i] = shrdist(rng) % 64;
   }
 
-  ankerl::nanobench::Bench bench;
-  bench.title("Compare sal/sar vs builtin shifts")
-    .unit("op")
-    .batch(N)
-    .warmup(10)
-    .minEpochTime(150ms)
-    .relative(false)
-    .performanceCounters(true);
+  auto createBench = [&](auto title) {
+    ankerl::nanobench::Bench bench;
 
-  // sal vs builtin << (беззнаковые типы, чтобы избежать UB для <<)
-  bench.run("sal<uint32_t>", [&] {
-    uint32_t acc = 0;
-    for (size_t i = 0; i < N; ++i) {
-      acc ^= sal(u32[i], static_cast<unsigned>(shl32[i]));
-    }
-    ankerl::nanobench::doNotOptimizeAway(acc);
-  });
+    bench.title(title)
+      .unit("op")
+      .batch(N)
+      .warmup(100)
+      .minEpochTime(150ms)
+      .minEpochIterations(60000)
+      .relative(true)
+      .performanceCounters(true);
 
-  bench.run("builtin << (uint32_t)", [&] {
-    uint32_t acc = 0;
-    for (size_t i = 0; i < N; ++i) {
-      acc ^= static_cast<uint32_t>(u32[i] << shl32[i]);
-    }
-    ankerl::nanobench::doNotOptimizeAway(acc);
-  });
+    return bench;
+  };
 
-  bench.run("sal<uint64_t>", [&] {
-    uint64_t acc = 0;
-    for (size_t i = 0; i < N; ++i) {
-      acc ^= sal(u64[i], static_cast<unsigned>(shl64[i]));
-    }
-    ankerl::nanobench::doNotOptimizeAway(acc);
-  });
+  auto runSalBench = [&](auto& bench, const auto& typeName, const auto& values, const auto& shifts) {
+    bench.run("builtin << ("s + typeName + ")", [&] {
+      uint32_t acc = 0;
+      for (size_t i = 0; i < N; ++i) {
+        acc ^= values[i] << shifts[i];
+      }
+      ankerl::nanobench::doNotOptimizeAway(acc);
+    });
 
-  bench.run("builtin << (uint64_t)", [&] {
-    uint64_t acc = 0;
-    for (size_t i = 0; i < N; ++i) {
-      acc ^= static_cast<uint64_t>(u64[i] << shl64[i]);
-    }
-    ankerl::nanobench::doNotOptimizeAway(acc);
-  });
+    bench.run("sal<"s + typeName + ">", [&] {
+      uint32_t acc = 0;
+      for (size_t i = 0; i < N; ++i) {
+        acc ^= sal(values[i], shifts[i]);
+      }
+      ankerl::nanobench::doNotOptimizeAway(acc);
+    });
+  };
 
-  // sar vs builtin >> (знаковые типы, неотрицательные сдвиги)
-  bench.run("sar<int32_t>", [&] {
-    int32_t acc = 0;
-    for (size_t i = 0; i < N; ++i) {
-      acc ^= sar(s32[i], static_cast<unsigned>(shr32[i]));
-    }
-    ankerl::nanobench::doNotOptimizeAway(acc);
-  });
 
-  bench.run("builtin >> (int32_t)", [&] {
-    int32_t acc = 0;
-    for (size_t i = 0; i < N; ++i) {
-      acc ^= static_cast<int32_t>(s32[i] >> shr32[i]);
-    }
-    ankerl::nanobench::doNotOptimizeAway(acc);
-  });
+  auto runSarBench = [&](auto& bench, const auto& typeName, const auto& values, const auto& shifts) {
+    bench.run("builtin >> ("s + typeName + ")", [&] {
+      uint32_t acc = 0;
+      for (size_t i = 0; i < N; ++i) {
+        acc ^= values[i] >> shifts[i];
+      }
+      ankerl::nanobench::doNotOptimizeAway(acc);
+    });
 
-  bench.run("sar<int64_t>", [&] {
-    int64_t acc = 0;
-    for (size_t i = 0; i < N; ++i) {
-      acc ^= sar(s64[i], static_cast<unsigned>(shr64[i]));
-    }
-    ankerl::nanobench::doNotOptimizeAway(acc);
-  });
+    bench.run("sar<"s + typeName + ">", [&] {
+      uint32_t acc = 0;
+      for (size_t i = 0; i < N; ++i) {
+        acc ^= sar(values[i], shifts[i]);
+      }
+      ankerl::nanobench::doNotOptimizeAway(acc);
+    });
+  };
 
-  bench.run("builtin >> (int64_t)", [&] {
-    int64_t acc = 0;
-    for (size_t i = 0; i < N; ++i) {
-      acc ^= static_cast<int64_t>(s64[i] >> shr64[i]);
-    }
-    ankerl::nanobench::doNotOptimizeAway(acc);
-  });
+  auto salBench1 = createBench("Compare sal vs builtin << (uint32_t)");
+  runSalBench(salBench1, "uint32_t", u32, shl32);
+
+  auto salBench2 = createBench("Compare sal vs builtin << (uint64_t)");
+  runSalBench(salBench2, "uint64_t", u64, shl64);
+
+  auto sarBench1 = createBench("Compare sar vs builtin >> (uint32_t)");
+  runSarBench(sarBench1, "uint32_t", u32, shl32);
+
+  auto sarBench2 = createBench("Compare sar vs builtin >> (uint64_t)");
+  runSarBench(sarBench2, "uint64_t", u64, shl64);
 }
