@@ -45,7 +45,6 @@ target_include_directories(bits_bench PRIVATE ${doctest_SOURCE_DIR})
 
 if (CMAKE_CONFIGURATION_TYPES)
     set_property(TARGET bits_bench PROPERTY EXCLUDE_FROM_DEFAULT_BUILD_Debug TRUE)
-    set_property(TARGET bits_bench PROPERTY EXCLUDE_FROM_ALL "$<CONFIG:Debug>")
     add_test(NAME bits_bench COMMAND bits_bench)
     set_tests_properties(bits_bench PROPERTIES DISABLED "$<CONFIG:Debug>")
 else ()
