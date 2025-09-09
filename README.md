@@ -10,7 +10,7 @@ Library for bit manipulation.
 add_rules("mode.debug", "mode.release")
 
 add_repositories("ttldtor https://github.com/ttldtor/xmake-repo.git")
-add_requires("bits 0.2.0")
+add_requires("bits v0.2.0")
 
 target("test_bits")
     set_kind("binary")
