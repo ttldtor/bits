@@ -143,6 +143,22 @@ xychart horizontal
     bar [2392.09, 1539.32, 2447.3, 1535.76, 2409.39, 1531.48, 2462.7, 1515.74, 16060.62, 9503.37, 6711.76, 6114.44, 17538.44, 9536.68, 6588.8, 6161.36, 17369.83, 16212.4, 9509.03, 6137.2, 17637.34, 16107.52, 9528.25, 6123.71]
 ```
 
+```mermaid
+---
+config:
+    xyChart:
+        showDataLabel: true
+    yAxis:
+        showLabel: false
+        showAxisLine: false
+---
+xychart horizontal
+    title "ns/op (lower is better)"
+    y-axis "ns/op" 0 --> 1
+    x-axis ["VS, l.shift, u32, builtin", "VS, l.shift, u32, sar|sal", "VS, l.shift, u64, builtin", "VS, l.shift, u64, sar|sal", "VS, r.shift, u32, builtin", "VS, r.shift, u32, sar|sal", "VS, r.shift, u64, builtin", "VS, r.shift, u64, sar|sal", "gcc, l.shift, u32, builtin", "gcc, l.shift, u32, sar|sal", "gcc, l.shift, u64, builtin", "gcc, l.shift, u64, sar|sal", "gcc, r.shift, u32, builtin", "gcc, r.shift, u32, sar|sal", "gcc, r.shift, u64, builtin", "gcc, r.shift, u64, sar|sal", "clang, l.shift, u32, builtin", "clang, l.shift, u32, sar|sal", "clang, l.shift, u64, builtin", "clang, l.shift, u64, sar|sal", "clang, r.shift, u32, builtin", "clang, r.shift, u32, sar|sal", "clang, r.shift, u64, builtin", "clang, r.shift, u64, sar|sal"]
+    bar [0.42, 0.65, 0.41, 0.65, 0.42, 0.65, 0.41, 0.66, 0.06, 0.11, 0.15, 0.16, 0.06, 0.1, 0.15, 0.16, 0.06, 0.06, 0.11, 0.16, 0.06, 0.06, 0.1, 0.16]
+```
+
 ### CI/CD
 
 #### win, x64, vs2022 (MSVC 19.44.35215.0)
