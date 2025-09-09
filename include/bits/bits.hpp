@@ -5,6 +5,7 @@
 
 #include <climits>
 #include <concepts>
+#include <limits>
 #include <type_traits>
 
 namespace org::ttldtor::bits {
@@ -46,10 +47,35 @@ using Max = detail::MaxImpl<Ts...>::Type;
  * @return The shifted `value`
  */
 template <std::integral V, std::integral S>
-static constexpr V sar(V value, S shift) noexcept;
+constexpr V sar(V value, S shift) noexcept;
 
 /**
- * Performs a left arithmetic bit shift operation (<< in Java, C, etc.).
+ * Performs a left arithmetic bit shift operation (<< in Java, C, etc.). The `shift` is unsigned.
+ *
+ * The result of the shift will be of the same type as the `value` being shifted.
+ * If the shift size is greater than or equal to the number of bits in the shifted `value`, then `0` will be
+ * returned.
+ *
+ * @tparam V The type of `value`
+ * @tparam US The type of `shift`
+ * @param value The value to be shifted
+ * @param shift The shift in bits
+ * @return The shifted `value`
+ */
+template <std::integral V, std::unsigned_integral US>
+constexpr V leftArithmeticShift(V value, US shift) noexcept {
+  using UV = std::make_unsigned_t<V>;
+  constexpr US width = static_cast<US>(std::numeric_limits<UV>::digits);
+
+  if (shift >= width) {
+    return V{0};
+  }
+
+  return static_cast<V>(static_cast<UV>(value) << shift);
+}
+
+/**
+ * Performs a left arithmetic bit shift operation (<< in Java, C, etc.). The `shift` is signed.
  *
  * The result of the shift will be of the same type as the `value` being shifted.
  * If the shift is a negative number of bits, then a @ref ::sar() "right arithmetic shift" will be performed.
@@ -57,35 +83,30 @@ static constexpr V sar(V value, S shift) noexcept;
  * returned.
  *
  * @tparam V The type of `value`
- * @tparam S The type of `shift`
+ * @tparam SS The type of `shift`
  * @param value The value to be shifted
  * @param shift The shift in bits
  * @return The shifted `value`
  */
-template <std::integral V, std::integral S>
-static constexpr V leftArithmeticShift(V value, S shift) noexcept {
-  using UnsignedShift = std::make_unsigned_t<S>;
+template <std::integral V, std::signed_integral SS>
+constexpr V leftArithmeticShift(V value, SS shift) noexcept {
+  using US = std::make_unsigned_t<SS>;
 
-  if constexpr (std::is_signed_v<S>) {
-    if (shift < 0) {
-      const auto magnitude = UnsignedShift{} - static_cast<UnsignedShift>(shift);
+  if (shift < 0) {
+    const US magnitude = US{0} - static_cast<US>(shift);
 
-      return sar(value, magnitude);
-    }
+    return sar(value, magnitude);
   }
 
-  if (shift == 0 || value == 0) {
-    return value;
-  }
+  using UV = std::make_unsigned_t<V>;
+  constexpr US width = static_cast<US>(std::numeric_limits<UV>::digits);
+  const US unsignedShift = static_cast<US>(shift);
 
-  const auto unsignedShift = static_cast<UnsignedShift>(shift);
-  const auto bitWidth = static_cast<UnsignedShift>(sizeof(V) * CHAR_BIT);
-
-  if (unsignedShift >= bitWidth) {
+  if (unsignedShift >= width) {
     return V{0};
   }
 
-  return static_cast<V>(value << unsignedShift);
+  return static_cast<V>(static_cast<UV>(value) << unsignedShift);
 }
 
 /**
@@ -103,13 +124,39 @@ static constexpr V leftArithmeticShift(V value, S shift) noexcept {
  * @return The shifted `value`
  */
 template <std::integral V, std::integral S>
-static constexpr V sal(V value, S shift) noexcept {
+constexpr V sal(V value, S shift) noexcept {
   return leftArithmeticShift(value, shift);
 }
 
 /**
- * Performs a right arithmetic bit shift operation (>> in Java, C, etc.). The sign bit is extended to preserve the
- * signedness of the number.
+ * Performs a right arithmetic bit shift operation (>> in Java, C, etc.). The `shift` is unsigned.
+ * The sign bit is extended to preserve the signedness of the number.
+ *
+ * The result of the shift will be of the same type as the `value` being shifted.
+ * If the shift size is greater than or equal to the number of bits in the shifted `value`, then, if the `value` is
+ * negative (a signed integer type), `-1` will be returned, and if positive, then `0` will be returned.
+ *
+ * @tparam V The type of `value`
+ * @tparam US The type of `shift`
+ * @param value The value to be shifted
+ * @param shift The shift in bits
+ * @return The shifted `value`
+ */
+template <std::integral V, std::unsigned_integral US>
+constexpr V rightArithmeticShift(V value, US shift) noexcept {
+  using UV = std::make_unsigned_t<V>;
+  constexpr US width = static_cast<US>(std::numeric_limits<UV>::digits);
+
+  if (shift >= width) {
+    return value < 0 ? static_cast<V>(-1) : V{0};
+  }
+
+  return static_cast<V>(value >> shift);
+}
+
+/**
+ * Performs a right arithmetic bit shift operation (>> in Java, C, etc.). The `shift` is signed.
+ * The sign bit is extended to preserve the signedness of the number.
  *
  * The result of the shift will be of the same type as the `value` being shifted.
  * If the shift is a negative number of bits, then a @ref ::sal() "left arithmetic shift" will be performed.
@@ -117,31 +164,26 @@ static constexpr V sal(V value, S shift) noexcept {
  * negative (a signed integer type), `-1` will be returned, and if positive, then `0` will be returned.
  *
  * @tparam V The type of `value`
- * @tparam S The type of `shift`
+ * @tparam SS The type of `shift`
  * @param value The value to be shifted
  * @param shift The shift in bits
  * @return The shifted `value`
  */
-template <std::integral V, std::integral S>
-static constexpr V rightArithmeticShift(V value, S shift) noexcept {
-  using UnsignedShift = std::make_unsigned_t<S>;
+template <std::integral V, std::signed_integral SS>
+constexpr V rightArithmeticShift(V value, SS shift) noexcept {
+  using US = std::make_unsigned_t<SS>;
 
-  if constexpr (std::is_signed_v<S>) {
-    if (shift < 0) {
-      const UnsignedShift magnitude = UnsignedShift{} - static_cast<UnsignedShift>(shift);
+  if (shift < 0) {
+    const US magnitude = US{0} - static_cast<US>(shift);
 
-      return sal(value, magnitude);
-    }
+    return sal(value, magnitude);
   }
 
-  if (shift == 0 || value == 0) {
-    return value;
-  }
+  using UV = std::make_unsigned_t<V>;
+  constexpr US width = static_cast<US>(std::numeric_limits<UV>::digits);
+  const US unsignedShift = static_cast<US>(shift);
 
-  const auto unsignedShift = static_cast<UnsignedShift>(shift);
-  const auto bitWidth = static_cast<UnsignedShift>(sizeof(V) * CHAR_BIT);
-
-  if (unsignedShift >= bitWidth) {
+  if (unsignedShift >= width) {
     return value < 0 ? static_cast<V>(-1) : V{0};
   }
 
@@ -164,7 +206,7 @@ static constexpr V rightArithmeticShift(V value, S shift) noexcept {
  * @return The shifted `value`
  */
 template <std::integral V, std::integral S>
-static constexpr V sar(V value, S shift) noexcept {
+constexpr V sar(V value, S shift) noexcept {
   return rightArithmeticShift(value, shift);
 }
 
@@ -183,7 +225,7 @@ static constexpr V sar(V value, S shift) noexcept {
  * @return The shifted `value`
  */
 template <std::integral V, std::integral S>
-static constexpr V shr(V value, S shift) noexcept;
+constexpr V shr(V value, S shift) noexcept;
 
 /**
  * Performs a left logical bit shift operation (shl).
@@ -200,7 +242,7 @@ static constexpr V shr(V value, S shift) noexcept;
  * @return The shifted `value`
  */
 template <std::integral V, std::integral S>
-static constexpr V leftLogicalShift(V value, S shift) noexcept {
+constexpr V leftLogicalShift(V value, S shift) noexcept {
   using UnsignedShift = std::make_unsigned_t<S>;
 
   if constexpr (std::is_signed_v<S>) {
@@ -240,7 +282,7 @@ static constexpr V leftLogicalShift(V value, S shift) noexcept {
  * @return The shifted `value`
  */
 template <std::integral V, std::integral S>
-static constexpr V shl(V value, S shift) noexcept {
+constexpr V shl(V value, S shift) noexcept {
   return leftLogicalShift(value, shift);
 }
 
@@ -259,7 +301,7 @@ static constexpr V shl(V value, S shift) noexcept {
  * @return The shifted `value`
  */
 template <std::integral V, std::integral S>
-static constexpr V rightLogicalShift(V value, S shift) noexcept {
+constexpr V rightLogicalShift(V value, S shift) noexcept {
   using UnsignedValue = std::make_unsigned_t<V>;
   using UnsignedShift = std::make_unsigned_t<S>;
 
@@ -300,7 +342,7 @@ static constexpr V rightLogicalShift(V value, S shift) noexcept {
  * @return The shifted `value`
  */
 template <std::integral V, std::integral S>
-static constexpr V shr(V value, S shift) noexcept {
+constexpr V shr(V value, S shift) noexcept {
   return rightLogicalShift(value, shift);
 }
 
@@ -315,7 +357,7 @@ static constexpr V shr(V value, S shift) noexcept {
  * @return The result of the bitwise AND operation, cast to type A.
  */
 template <std::integral A, std::integral B>
-static constexpr A andOp(A a, B b) noexcept {
+constexpr A andOp(A a, B b) noexcept {
   using Common = std::make_unsigned_t<Max<A, B>>;
 
   return static_cast<A>(static_cast<Common>(a) & static_cast<Common>(b));
@@ -332,7 +374,7 @@ static constexpr A andOp(A a, B b) noexcept {
  * @return The result of the bitwise OR operation, cast to type A.
  */
 template <std::integral A, std::integral B>
-static constexpr A orOp(A a, B b) noexcept {
+constexpr A orOp(A a, B b) noexcept {
   using Common = std::make_unsigned_t<Max<A, B>>;
 
   return static_cast<A>(static_cast<Common>(a) | static_cast<Common>(b));
@@ -349,7 +391,7 @@ static constexpr A orOp(A a, B b) noexcept {
  * @return The result of the bitwise XOR operation, cast to type A.
  */
 template <std::integral A, std::integral B>
-static constexpr A xorOp(A a, B b) noexcept {
+constexpr A xorOp(A a, B b) noexcept {
   using Common = std::make_unsigned_t<Max<A, B>>;
 
   return static_cast<A>(static_cast<Common>(a) ^ static_cast<Common>(b));
@@ -364,7 +406,7 @@ static constexpr A xorOp(A a, B b) noexcept {
  * @return `true` if the specified bits are set in the source value.
  */
 template <std::unsigned_integral T>
-static constexpr T bitsAreSet(T sourceBits, T bitMaskToCheck) {
+constexpr T bitsAreSet(T sourceBits, T bitMaskToCheck) {
   return andOp(sourceBits, bitMaskToCheck) != 0;
 }
 
@@ -378,7 +420,7 @@ static constexpr T bitsAreSet(T sourceBits, T bitMaskToCheck) {
  * @return `true` if the specified bits are set in the source value.
  */
 template <std::integral SB, std::integral M>
-static constexpr SB bitsAreSet(SB sourceBits, M bitMaskToCheck) {
+constexpr SB bitsAreSet(SB sourceBits, M bitMaskToCheck) {
   using MaxType = Max<SB, M>;
 
   if constexpr (std::is_signed_v<SB> || std::is_signed_v<M>) {
@@ -399,7 +441,7 @@ static constexpr SB bitsAreSet(SB sourceBits, M bitMaskToCheck) {
  * @return The resulting value after setting the specified bits.
  */
 template <std::unsigned_integral T>
-static constexpr T setBits(T sourceBits, T bitMaskToSet) {
+constexpr T setBits(T sourceBits, T bitMaskToSet) {
   return orOp(sourceBits, bitMaskToSet);
 }
 
@@ -413,7 +455,7 @@ static constexpr T setBits(T sourceBits, T bitMaskToSet) {
  * @return The resulting value after setting the specified bits.
  */
 template <std::integral SB, std::integral M>
-static constexpr SB setBits(SB sourceBits, M bitMaskToSet) {
+constexpr SB setBits(SB sourceBits, M bitMaskToSet) {
   using MaxType = Max<SB, M>;
 
   if constexpr (std::is_signed_v<SB> || std::is_signed_v<M>) {
@@ -434,7 +476,7 @@ static constexpr SB setBits(SB sourceBits, M bitMaskToSet) {
  * @return The resulting value after resetting the specified bits.
  */
 template <std::unsigned_integral T>
-static constexpr T resetBits(T sourceBits, T bitMaskToReset) {
+constexpr T resetBits(T sourceBits, T bitMaskToReset) {
   return andOp(sourceBits, ~bitMaskToReset);
 }
 
@@ -449,7 +491,7 @@ static constexpr T resetBits(T sourceBits, T bitMaskToReset) {
  */
 template <std::integral SB, std::integral M>
 // ReSharper disable once CppDFAConstantParameter
-static constexpr SB resetBits(SB sourceBits, M bitMaskToReset) {
+constexpr SB resetBits(SB sourceBits, M bitMaskToReset) {
   using MaxType = Max<SB, M>;
 
   if constexpr (std::is_signed_v<SB> || std::is_signed_v<M>) {

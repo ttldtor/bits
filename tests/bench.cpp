@@ -14,8 +14,6 @@
 using namespace org::ttldtor::bits;
 using namespace std::literals;
 
-// NOLINTNEXTLINE
-
 TEST_CASE("bench_sal_sar_vs_builtin") {
   constexpr size_t N = 1u << 15;
 
@@ -84,7 +82,6 @@ TEST_CASE("bench_sal_sar_vs_builtin") {
       ankerl::nanobench::doNotOptimizeAway(acc);
     });
   };
-
 
   auto runSarBench = [&](auto& bench, const auto& typeName, const auto& values, const auto& shifts) {
     bench.run("builtin >> ("s + typeName + ")", [&] {
