@@ -64,14 +64,14 @@ constexpr V sar(V value, S shift) noexcept;
  */
 template <std::integral V, std::unsigned_integral US>
 constexpr V leftArithmeticShift(V value, US shift) noexcept {
-  using UV = std::make_unsigned_t<V>;
+  using UV = std::make_unsigned_t<std::remove_cv_t<V>>;
   constexpr US width = static_cast<US>(std::numeric_limits<UV>::digits);
 
-  if (shift >= width) {
-    return V{0};
+  if (shift < width) {
+    return static_cast<V>(static_cast<UV>(value) << shift);
   }
 
-  return static_cast<V>(static_cast<UV>(value) << shift);
+  return V{0};
 }
 
 /**
@@ -90,7 +90,7 @@ constexpr V leftArithmeticShift(V value, US shift) noexcept {
  */
 template <std::integral V, std::signed_integral SS>
 constexpr V leftArithmeticShift(V value, SS shift) noexcept {
-  using US = std::make_unsigned_t<SS>;
+  using US = std::make_unsigned_t<std::remove_cv_t<SS>>;
 
   if (shift < 0) {
     const US magnitude = US{0} - static_cast<US>(shift);
@@ -98,15 +98,15 @@ constexpr V leftArithmeticShift(V value, SS shift) noexcept {
     return sar(value, magnitude);
   }
 
-  using UV = std::make_unsigned_t<V>;
+  using UV = std::make_unsigned_t<std::remove_cv_t<V>>;
   constexpr US width = static_cast<US>(std::numeric_limits<UV>::digits);
   const US unsignedShift = static_cast<US>(shift);
 
-  if (unsignedShift >= width) {
-    return V{0};
+  if (unsignedShift < width) {
+    return static_cast<V>(static_cast<UV>(value) << unsignedShift);
   }
 
-  return static_cast<V>(static_cast<UV>(value) << unsignedShift);
+  return V{0};
 }
 
 /**
@@ -144,14 +144,14 @@ constexpr V sal(V value, S shift) noexcept {
  */
 template <std::integral V, std::unsigned_integral US>
 constexpr V rightArithmeticShift(V value, US shift) noexcept {
-  using UV = std::make_unsigned_t<V>;
+  using UV = std::make_unsigned_t<std::remove_cv_t<V>>;
   constexpr US width = static_cast<US>(std::numeric_limits<UV>::digits);
 
-  if (shift >= width) {
-    return value < 0 ? static_cast<V>(-1) : V{0};
+  if (shift < width) {
+    return static_cast<V>(value >> shift);
   }
 
-  return static_cast<V>(value >> shift);
+  return value < 0 ? static_cast<V>(-1) : V{0};
 }
 
 /**
@@ -171,7 +171,7 @@ constexpr V rightArithmeticShift(V value, US shift) noexcept {
  */
 template <std::integral V, std::signed_integral SS>
 constexpr V rightArithmeticShift(V value, SS shift) noexcept {
-  using US = std::make_unsigned_t<SS>;
+  using US = std::make_unsigned_t<std::remove_cv_t<SS>>;
 
   if (shift < 0) {
     const US magnitude = US{0} - static_cast<US>(shift);
@@ -179,15 +179,15 @@ constexpr V rightArithmeticShift(V value, SS shift) noexcept {
     return sal(value, magnitude);
   }
 
-  using UV = std::make_unsigned_t<V>;
+  using UV = std::make_unsigned_t<std::remove_cv_t<V>>;
   constexpr US width = static_cast<US>(std::numeric_limits<UV>::digits);
   const US unsignedShift = static_cast<US>(shift);
 
-  if (unsignedShift >= width) {
-    return value < 0 ? static_cast<V>(-1) : V{0};
+  if (unsignedShift < width) {
+    return static_cast<V>(value >> unsignedShift);
   }
 
-  return static_cast<V>(value >> unsignedShift);
+  return value < 0 ? static_cast<V>(-1) : V{0};
 }
 
 /**
@@ -243,7 +243,7 @@ constexpr V shr(V value, S shift) noexcept;
  */
 template <std::integral V, std::integral S>
 constexpr V leftLogicalShift(V value, S shift) noexcept {
-  using UnsignedShift = std::make_unsigned_t<S>;
+  using UnsignedShift = std::make_unsigned_t<std::remove_cv_t<S>>;
 
   if constexpr (std::is_signed_v<S>) {
     if (shift < 0) {
@@ -302,8 +302,8 @@ constexpr V shl(V value, S shift) noexcept {
  */
 template <std::integral V, std::integral S>
 constexpr V rightLogicalShift(V value, S shift) noexcept {
-  using UnsignedValue = std::make_unsigned_t<V>;
-  using UnsignedShift = std::make_unsigned_t<S>;
+  using UnsignedValue = std::make_unsigned_t<std::remove_cv_t<V>>;
+  using UnsignedShift = std::make_unsigned_t<std::remove_cv_t<S>>;
 
   if constexpr (std::is_signed_v<S>) {
     if (shift < 0) {
