@@ -63,3 +63,15 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         target_compile_options(bits_bench PRIVATE -O3 -march=native -Werror -pedantic)
     endif ()
 endif ()
+
+
+if (MSVC)
+    include(CheckCompilerFlag)
+    check_compiler_flag(CXX /arch:AVX2 HAVE_AVX2)
+
+    if (HAVE_AVX2)
+        target_compile_options(bits_bench PRIVATE
+                $<$<AND:$<CXX_COMPILER_ID:CXX,MSVC>,$<CONFIG:Release>>:/O2 /arch:AVX2>
+        )
+    endif ()
+endif ()
