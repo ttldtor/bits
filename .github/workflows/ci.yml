@@ -79,6 +79,12 @@ jobs:
           ls
           mkdir ${{github.workspace}}/build
 
+      - name: Prepare build (Rosetta test)
+        if: ${{ matrix.config.image == 'macos-14' }}
+        run: |
+          ls
+          mkdir ${{github.workspace}}/build_x64
+
       - name: Configure CMake
         if: ${{ contains(matrix.config.os, 'mac') }}
         run: >
@@ -86,6 +92,15 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{matrix.buildType}}
           -DCMAKE_C_COMPILER=${{matrix.config.cc}}
           -DCMAKE_CXX_COMPILER=${{matrix.config.cxx}}
+
+      - name: Configure CMake (Rosetta test)
+        if: ${{ matrix.config.image == 'macos-14' }}
+        run: >
+          cmake -B ${{github.workspace}}/build_x64
+          -DCMAKE_BUILD_TYPE=${{matrix.buildType}}
+          -DCMAKE_C_COMPILER=${{matrix.config.cc}}
+          -DCMAKE_CXX_COMPILER=${{matrix.config.cxx}}
+          -DCMAKE_OSX_ARCHITECTURES=x86_64
 
       - name: Configure CMake
         if: ${{ contains(matrix.config.os, 'linux') }}
@@ -112,6 +127,21 @@ jobs:
           cmake --build ${{github.workspace}}/build --config ${{matrix.buildType}} -j ${{matrix.config.cores}}
           --
           /p:CL_MPCount=${{matrix.config.cores}}
+
+      - name: Build x86_64 binary (Rosetta test)
+        if: ${{ matrix.config.image == 'macos-14' }}
+        run: |
+          cmake --build ${{github.workspace}}/build_x64 --config ${{matrix.buildType}} -j ${{matrix.config.cores}}
+
+      - name: Test under Rosetta (x86_64)
+        if: ${{ matrix.config.image == 'macos-14' && !cancelled() }}
+        working-directory: ${{github.workspace}}/build_x64
+        run: |
+          echo "=== Running tests via Rosetta (x86_64) ==="
+          for t in $(ctest --show-only=json-v1 | jq -r '.tests[] | .command[0]'); do
+            echo "--- Running $t ---"
+            arch -x86_64 "$t" || exit 1
+          done          
 
       - name: Test
         if: ${{ ! cancelled() }}
