@@ -296,8 +296,8 @@
 config:
     xyChart:
         showDataLabel: true
-        width: 1000
-        height: 1000
+        width: 1200
+        height: 2400
     yAxis:
         showLabel: false
         showAxisLine: false
@@ -314,8 +314,8 @@ xychart horizontal
 config:
     xyChart:
         showDataLabel: true
-        width: 1000
-        height: 1000
+        width: 1200
+        height: 2400
     yAxis:
         showLabel: false
         showAxisLine: false
