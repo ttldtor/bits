@@ -138,7 +138,10 @@ jobs:
         working-directory: ${{github.workspace}}/build_x64
         run: |
           echo "=== Running tests via Rosetta (x86_64) ==="
-          arch -x86_64 ctest -C ${{matrix.buildType}} --extra-verbose --output-on-failure --parallel ${{matrix.config.cores}}
+          for t in $(ctest --show-only=json-v1 | jq -r '.tests[] | .command[0]'); do
+            echo "--- Running $t ---"
+            arch -x86_64 "$t" || exit 1
+          done          
 
       - name: Test
         if: ${{ ! cancelled() }}
