@@ -13,6 +13,7 @@ using namespace org::ttldtor::bits;
 template <typename T>
 constexpr std::size_t bitWidth() {
   using U = std::make_unsigned_t<T>;
+
   return static_cast<std::size_t>(std::numeric_limits<U>::digits);
 }
 
@@ -48,20 +49,21 @@ TEST_CASE("sal - non-negative shifts within bit width") {
 
 TEST_CASE("sal - shift >= bit width returns 0") {
   SUBCASE("unsigned V") {
-    constexpr auto bw8 = bitWidth<std::uint8_t>();
-    constexpr auto bw32 = bitWidth<std::uint32_t>();
-    constexpr auto bw64 = bitWidth<std::uint64_t>();
+    constexpr auto BIT_WIDTH_8 = bitWidth<std::uint8_t>();
+    constexpr auto BIT_WIDTH_32 = bitWidth<std::uint32_t>();
+    constexpr auto BIT_WIDTH_64 = bitWidth<std::uint64_t>();
 
-    CHECK_EQ(sal<std::uint8_t, int>(0xFFu, static_cast<int>(bw8)), 0u);
+    CHECK_EQ(sal<std::uint8_t, int>(0xFFu, static_cast<int>(BIT_WIDTH_8)), 0u);
     CHECK_EQ(sal<std::uint8_t, int>(0xFFu, 100), 0u);
 
-    CHECK_EQ(sal<std::uint32_t, int>(0xFFFFFFFFu, static_cast<int>(bw32)), 0u);
-    CHECK_EQ(sal<std::uint64_t, int>(0xFFFFFFFFFFFFFFFFull, static_cast<int>(bw64)), 0ull);
+    CHECK_EQ(sal<std::uint32_t, int>(0xFFFFFFFFu, static_cast<int>(BIT_WIDTH_32)), 0u);
+    CHECK_EQ(sal<std::uint64_t, int>(0xFFFFFFFFFFFFFFFFull, static_cast<int>(BIT_WIDTH_64)), 0ull);
   }
 
   SUBCASE("signed V (do not rely on the behavior of negative left shift)") {
-    constexpr auto bw16 = bitWidth<std::int16_t>();
-    CHECK_EQ(sal<std::int16_t, int>(123, static_cast<int>(bw16)), 0);
+    constexpr auto BIT_WIDTH_16 = bitWidth<std::int16_t>();
+
+    CHECK_EQ(sal<std::int16_t, int>(123, static_cast<int>(BIT_WIDTH_16)), 0);
     CHECK_EQ(sal<std::int32_t, int>(456, 1000), 0);
   }
 }
@@ -89,14 +91,14 @@ TEST_CASE("sal - negative shift delegates to sar (right arithmetic)") {
 
   SUBCASE("extreme negative shift: shift == min(S)") {
     // use the minimum possible shift value for the signed S
-    constexpr int smin = std::numeric_limits<int>::min();
+    constexpr int MIN_SHIFT = std::numeric_limits<int>::min();
     // magnitude is correctly calculated in unsigned representation, resulting right shift >= bit width => 0 for
     // unsigned, -1/0 for signed inside sar
     CHECK_EQ(
-      sal<std::uint32_t, int>(0xDEADBEEFu, smin),
-      sar(0xDEADBEEFu, static_cast<std::make_unsigned_t<int>>(0) - static_cast<std::make_unsigned_t<int>>(smin)));
-    CHECK_EQ(sal(-1, smin),
-             sar(-1, static_cast<std::make_unsigned_t<int>>(0) - static_cast<std::make_unsigned_t<int>>(smin)));
+      sal<std::uint32_t, int>(0xDEADBEEFu, MIN_SHIFT),
+      sar(0xDEADBEEFu, static_cast<std::make_unsigned_t<int>>(0) - static_cast<std::make_unsigned_t<int>>(MIN_SHIFT)));
+    CHECK_EQ(sal(-1, MIN_SHIFT),
+             sar(-1, static_cast<std::make_unsigned_t<int>>(0) - static_cast<std::make_unsigned_t<int>>(MIN_SHIFT)));
   }
 }
 
@@ -150,22 +152,22 @@ TEST_CASE("sar - non-negative shifts within bit width") {
 
 TEST_CASE("sar - shift >= bit width returns 0 for non-negative and -1 for negative") {
   SUBCASE("unsigned V") {
-    constexpr auto bw8 = bitWidth<std::uint8_t>();
-    constexpr auto bw32 = bitWidth<std::uint32_t>();
-    constexpr auto bw64 = bitWidth<std::uint64_t>();
+    constexpr auto BIT_WIDTH_8 = bitWidth<std::uint8_t>();
+    constexpr auto BIT_WIDTH_32 = bitWidth<std::uint32_t>();
+    constexpr auto BIT_WIDTH_64 = bitWidth<std::uint64_t>();
 
-    CHECK_EQ(sar<std::uint8_t, int>(0xFFu, static_cast<int>(bw8)), 0u);
+    CHECK_EQ(sar<std::uint8_t, int>(0xFFu, static_cast<int>(BIT_WIDTH_8)), 0u);
     CHECK_EQ(sar<std::uint8_t, int>(0xFFu, 100), 0u);
 
-    CHECK_EQ(sar<std::uint32_t, int>(0xFFFFFFFFu, static_cast<int>(bw32)), 0u);
-    CHECK_EQ(sar<std::uint64_t, int>(0xFFFFFFFFFFFFFFFFull, static_cast<int>(bw64)), 0ull);
+    CHECK_EQ(sar<std::uint32_t, int>(0xFFFFFFFFu, static_cast<int>(BIT_WIDTH_32)), 0u);
+    CHECK_EQ(sar<std::uint64_t, int>(0xFFFFFFFFFFFFFFFFull, static_cast<int>(BIT_WIDTH_64)), 0ull);
   }
 
   SUBCASE("signed V") {
-    constexpr auto bw16 = bitWidth<std::int16_t>();
+    constexpr auto BIT_WIDTH_16 = bitWidth<std::int16_t>();
 
-    CHECK_EQ(sar<std::int16_t, int>(123, static_cast<int>(bw16)), 0);
-    CHECK_EQ(sar<std::int16_t, int>(-123, static_cast<int>(bw16)), static_cast<std::int16_t>(-1));
+    CHECK_EQ(sar<std::int16_t, int>(123, static_cast<int>(BIT_WIDTH_16)), 0);
+    CHECK_EQ(sar<std::int16_t, int>(-123, static_cast<int>(BIT_WIDTH_16)), static_cast<std::int16_t>(-1));
 
     CHECK_EQ(sar<std::int32_t, int>(456, 1000), 0);
     CHECK_EQ(sar<std::int32_t, int>(-456, 1000), static_cast<std::int32_t>(-1));
@@ -190,12 +192,12 @@ TEST_CASE("sar - negative shift delegates to sal (left arithmetic)") {
   }
 
   SUBCASE("extreme negative shift: shift == min(S)") {
-    constexpr int smin = std::numeric_limits<int>::min();
+    constexpr int MIN_SHIFT = std::numeric_limits<int>::min();
     using U = std::make_unsigned_t<int>;
-    const auto magnitude = U{} - static_cast<U>(smin);
+    constexpr auto magnitude = U{} - static_cast<U>(MIN_SHIFT);
 
-    CHECK_EQ(sar<std::uint32_t, int>(0x00000001u, smin), sal<std::uint32_t, U>(0x00000001u, magnitude));
-    CHECK_EQ(sar<std::int32_t, int>(1, smin), sal<std::int32_t, U>(1, magnitude));
+    CHECK_EQ(sar<std::uint32_t, int>(0x00000001u, MIN_SHIFT), sal<std::uint32_t, U>(0x00000001u, magnitude));
+    CHECK_EQ(sar<std::int32_t, int>(1, MIN_SHIFT), sal<std::int32_t, U>(1, magnitude));
   }
 }
 
@@ -250,20 +252,21 @@ TEST_CASE("shl - non-negative shifts within bit width") {
 
 TEST_CASE("shl - shift >= bit width returns 0") {
   SUBCASE("unsigned V") {
-    constexpr auto bw8 = bitWidth<std::uint8_t>();
-    constexpr auto bw32 = bitWidth<std::uint32_t>();
-    constexpr auto bw64 = bitWidth<std::uint64_t>();
+    constexpr auto BIT_WIDTH_8 = bitWidth<std::uint8_t>();
+    constexpr auto BIT_WIDTH_32 = bitWidth<std::uint32_t>();
+    constexpr auto BIT_WIDTH_64 = bitWidth<std::uint64_t>();
 
-    CHECK_EQ(shl<std::uint8_t, int>(0xFFu, static_cast<int>(bw8)), 0u);
+    CHECK_EQ(shl<std::uint8_t, int>(0xFFu, static_cast<int>(BIT_WIDTH_8)), 0u);
     CHECK_EQ(shl<std::uint8_t, int>(0xFFu, 100), 0u);
 
-    CHECK_EQ(shl<std::uint32_t, int>(0xFFFFFFFFu, static_cast<int>(bw32)), 0u);
-    CHECK_EQ(shl<std::uint64_t, int>(0xFFFFFFFFFFFFFFFFull, static_cast<int>(bw64)), 0ull);
+    CHECK_EQ(shl<std::uint32_t, int>(0xFFFFFFFFu, static_cast<int>(BIT_WIDTH_32)), 0u);
+    CHECK_EQ(shl<std::uint64_t, int>(0xFFFFFFFFFFFFFFFFull, static_cast<int>(BIT_WIDTH_64)), 0ull);
   }
 
   SUBCASE("signed V") {
-    constexpr auto bw16 = bitWidth<std::int16_t>();
-    CHECK_EQ(shl<std::int16_t, int>(123, static_cast<int>(bw16)), 0);
+    constexpr auto BIT_WIDTH_16 = bitWidth<std::int16_t>();
+
+    CHECK_EQ(shl<std::int16_t, int>(123, static_cast<int>(BIT_WIDTH_16)), 0);
     CHECK_EQ(shl<std::int32_t, int>(456, 1000), 0);
   }
 }
@@ -280,12 +283,12 @@ TEST_CASE("shl - negative shift delegates to shr (right logical)") {
   }
 
   SUBCASE("extreme negative shift: shift == min(S)") {
-    constexpr int smin = std::numeric_limits<int>::min();
+    constexpr int MIN_SHIFT = std::numeric_limits<int>::min();
     using U = std::make_unsigned_t<int>;
-    const auto magnitude = U{} - static_cast<U>(smin);
+    constexpr auto MAGNITUDE = U{} - static_cast<U>(MIN_SHIFT);
 
-    CHECK_EQ(shl<std::uint32_t, int>(0xDEADBEEFu, smin), shr<std::uint32_t, U>(0xDEADBEEFu, magnitude));
-    CHECK_EQ(shl<std::int32_t, int>(1, smin), shr<std::int32_t, U>(1, magnitude));
+    CHECK_EQ(shl<std::uint32_t, int>(0xDEADBEEFu, MIN_SHIFT), shr<std::uint32_t, U>(0xDEADBEEFu, MAGNITUDE));
+    CHECK_EQ(shl<std::int32_t, int>(1, MIN_SHIFT), shr<std::int32_t, U>(1, MAGNITUDE));
   }
 }
 
@@ -339,21 +342,21 @@ TEST_CASE("shr - non-negative shifts within bit width") {
 
 TEST_CASE("shr - shift >= bit width returns 0") {
   SUBCASE("unsigned V") {
-    constexpr auto bw8 = bitWidth<std::uint8_t>();
-    constexpr auto bw32 = bitWidth<std::uint32_t>();
-    constexpr auto bw64 = bitWidth<std::uint64_t>();
+    constexpr auto BIT_WIDTH_8 = bitWidth<std::uint8_t>();
+    constexpr auto BIT_WIDTH_32 = bitWidth<std::uint32_t>();
+    constexpr auto BIT_WIDTH_64 = bitWidth<std::uint64_t>();
 
-    CHECK_EQ(shr<std::uint8_t, int>(0xFFu, static_cast<int>(bw8)), 0u);
+    CHECK_EQ(shr<std::uint8_t, int>(0xFFu, static_cast<int>(BIT_WIDTH_8)), 0u);
     CHECK_EQ(shr<std::uint8_t, int>(0xFFu, 100), 0u);
 
-    CHECK_EQ(shr<std::uint32_t, int>(0xFFFFFFFFu, static_cast<int>(bw32)), 0u);
-    CHECK_EQ(shr<std::uint64_t, int>(0xFFFFFFFFFFFFFFFFull, static_cast<int>(bw64)), 0ull);
+    CHECK_EQ(shr<std::uint32_t, int>(0xFFFFFFFFu, static_cast<int>(BIT_WIDTH_32)), 0u);
+    CHECK_EQ(shr<std::uint64_t, int>(0xFFFFFFFFFFFFFFFFull, static_cast<int>(BIT_WIDTH_64)), 0ull);
   }
 
   SUBCASE("signed V") {
-    constexpr auto bw16 = bitWidth<std::int16_t>();
-    constexpr auto bw32 = bitWidth<std::int32_t>();
-    CHECK_EQ(shr<std::int16_t, int>(-1, static_cast<int>(bw16)), 0);
+    constexpr auto BIT_WIDTH_16 = bitWidth<std::int16_t>();
+
+    CHECK_EQ(shr<std::int16_t, int>(-1, static_cast<int>(BIT_WIDTH_16)), 0);
     CHECK_EQ(shr<std::int32_t, int>(-456, 1000), 0);
     CHECK_EQ(shr<std::int32_t, int>(456, 1000), 0);
   }
@@ -371,12 +374,12 @@ TEST_CASE("shr - negative shift delegates to shl (left logical)") {
   }
 
   SUBCASE("extreme negative shift: shift == min(S)") {
-    constexpr int smin = std::numeric_limits<int>::min();
+    constexpr int MIN_SHIFT = std::numeric_limits<int>::min();
     using U = std::make_unsigned_t<int>;
-    const auto magnitude = U{} - static_cast<U>(smin);
+    constexpr auto MAGNITUDE = U{} - static_cast<U>(MIN_SHIFT);
 
-    CHECK_EQ(shr<std::uint32_t, int>(0x00000001u, smin), shl<std::uint32_t, U>(0x00000001u, magnitude));
-    CHECK_EQ(shr<std::int32_t, int>(1, smin), shl<std::int32_t, U>(1, magnitude));
+    CHECK_EQ(shr<std::uint32_t, int>(0x00000001u, MIN_SHIFT), shl<std::uint32_t, U>(0x00000001u, MAGNITUDE));
+    CHECK_EQ(shr<std::int32_t, int>(1, MIN_SHIFT), shl<std::int32_t, U>(1, MAGNITUDE));
   }
 }
 
