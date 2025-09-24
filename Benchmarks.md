@@ -63,11 +63,11 @@ config:
         showLabel: false
         showAxisLine: false
 ---
-xychart horizontal
-    title "Mop/s (higher is better)"
-    y-axis "Mop/s" 1000 --> 5000
-    x-axis ["l.shift, u32, builtin", "l.shift, u32, sal", "l.shift, u64, builtin", "l.shift, u64, sal", "r.shift, u32, builtin", "r.shift, u32, sar", "r.shift, u64, builtin", "r.shift, u64, sar", "r.shift, i32, builtin", "r.shift, i32, sar", "r.shift, i64, builtin", "r.shift, i64, sar", "l.shift, u32, builtin", "l.shift, u32, shl", "l.shift, u64, builtin", "l.shift, u64, shl", "r.shift, u32, builtin", "r.shift, u32, shr", "r.shift, u64, builtin", "r.shift, u64, shr"]
-    bar [2433, 2111.61, 2413.15, 1889.62, 2434.73, 2124.61, 2438.65, 1516.85, 2438.3, 1516.16, 2271.5, 1511.55, 2454.97, 2126.02, 2415.46, 1895.98, 2451.88, 2139.88, 2450.09, 1517.32]
+xychart-beta horizontal
+title "Mop/s (higher is better)"
+y-axis "Mop/s" 1000 --> 5000
+x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin", "r.shift, i32, sar", "r.shift, i64, builtin", "r.shift, i64, sar", "l.shift, u32, builtin, 2", "l.shift, u32, shl", "l.shift, u64, builtin, 2", "l.shift, u64, shl", "r.shift, u32, builtin, 2", "r.shift, u32, shr", "r.shift, u64, builtin, 2", "r.shift, u64, shr"]
+bar [2433, 2111.61, 2413.15, 1889.62, 2434.73, 2124.61, 2438.65, 1516.85, 2438.3, 1516.16, 2271.5, 1511.55, 2454.97, 2126.02, 2415.46, 1895.98, 2451.88, 2139.88, 2450.09, 1517.32]
 ```
 
 ```mermaid
@@ -79,34 +79,64 @@ config:
         showLabel: false
         showAxisLine: false
 ---
-xychart horizontal
-    title "ns/op (lower is better)"
-    y-axis "ns/op" 0 --> 1
-    x-axis ["l.shift, u32, builtin", "l.shift, u32, sal", "l.shift, u64, builtin", "l.shift, u64, sal", "r.shift, u32, builtin", "r.shift, u32, sar", "r.shift, u64, builtin", "r.shift, u64, sar", "r.shift, i32, builtin", "r.shift, i32, sar", "r.shift, i64, builtin", "r.shift, i64, sar", "l.shift, u32, builtin", "l.shift, u32, shl", "l.shift, u64, builtin", "l.shift, u64, shl", "r.shift, u32, builtin", "r.shift, u32, shr", "r.shift, u64, builtin", "r.shift, u64, shr"]
-    bar [0.41, 0.47, 0.41, 0.53, 0.41, 0.47, 0.41, 0.66, 0.41, 0.66, 0.44, 0.66, 0.41, 0.47, 0.41, 0.53, 0.41, 0.47, 0.41, 0.66]
+xychart-beta horizontal
+title "ns/op (lower is better)"
+y-axis "ns/op" 0 --> 1
+x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin", "r.shift, i32, sar", "r.shift, i64, builtin", "r.shift, i64, sar", "l.shift, u32, builtin, 2", "l.shift, u32, shl", "l.shift, u64, builtin, 2", "l.shift, u64, shl", "r.shift, u32, builtin, 2", "r.shift, u32, shr", "r.shift, u64, builtin, 2", "r.shift, u64, shr"]
+bar [0.41, 0.47, 0.41, 0.53, 0.41, 0.47, 0.41, 0.66, 0.41, 0.66, 0.44, 0.66, 0.41, 0.47, 0.41, 0.53, 0.41, 0.47, 0.41, 0.66]
 ```
 
 ### VS 2022 (clang-cl, `/O2 -march=native`)
 
 | relative | ns/op |              op/s | err% | total | Compare sal vs builtin << (uint32_t) |
 |---------:|------:|------------------:|-----:|------:|:-------------------------------------|
-|   100.0% |  0.05 | 18,812,689,661.38 | 1.6% |  1.80 | `builtin << (uint32_t)`              |
-|   101.3% |  0.05 | 19,064,941,298.75 | 0.3% |  1.81 | `sal<uint32_t>`                      |
+|   100.0% |  0.06 | 17,955,998,150.00 | 0.1% |  1.80 | `builtin << (uint32_t)`              |
+|    98.9% |  0.06 | 17,752,996,669.90 | 0.1% |  1.82 | `sal<uint32_t>`                      |
 
 | relative | ns/op |              op/s | err% | total | Compare sal vs builtin << (uint64_t) |
 |---------:|------:|------------------:|-----:|------:|:-------------------------------------|
-|   100.0% |  0.10 | 10,306,242,595.86 | 0.1% |  2.31 | `builtin << (uint64_t)`              |
-|    61.2% |  0.16 |  6,311,373,812.44 | 0.2% |  3.77 | `sal<uint64_t>`                      |
+|   100.0% |  0.08 | 11,801,165,804.83 | 0.1% |  2.02 | `builtin << (uint64_t)`              |
+|    53.4% |  0.16 |  6,300,931,020.29 | 0.0% |  3.78 | `sal<uint64_t>`                      |
 
 | relative | ns/op |              op/s | err% | total | Compare sar vs builtin >> (uint32_t) |
 |---------:|------:|------------------:|-----:|------:|:-------------------------------------|
-|   100.0% |  0.05 | 19,160,233,043.62 | 0.2% |  1.82 | `builtin >> (uint32_t)`              |
-|    99.9% |  0.05 | 19,133,815,229.14 | 0.2% |  1.82 | `sar<uint32_t>`                      |
+|   100.0% |  0.06 | 16,799,323,115.62 | 0.5% |  1.81 | `builtin >> (uint32_t)`              |
+|   104.8% |  0.06 | 17,604,804,652.46 | 0.1% |  1.81 | `sar<uint32_t>`                      |
 
 | relative | ns/op |              op/s | err% | total | Compare sar vs builtin >> (uint64_t) |
 |---------:|------:|------------------:|-----:|------:|:-------------------------------------|
-|   100.0% |  0.10 | 10,310,632,208.17 | 0.1% |  2.32 | `builtin >> (uint64_t)`              |
-|    61.0% |  0.16 |  6,288,994,688.54 | 0.5% |  3.81 | `sar<uint64_t>`                      |
+|   100.0% |  0.08 | 11,796,012,352.21 | 0.1% |  2.02 | `builtin >> (uint64_t)`              |
+|    53.4% |  0.16 |  6,301,508,878.77 | 0.1% |  3.78 | `sar<uint64_t>`                      |
+
+| relative | ns/op |              op/s | err% | total | Compare sar vs builtin >> (int32_t) |
+|---------:|------:|------------------:|-----:|------:|:------------------------------------|
+|   100.0% |  0.06 | 17,649,120,829.06 | 0.1% |  1.81 | `builtin >> (int32_t)`              |
+|   102.8% |  0.06 | 18,143,178,004.93 | 0.1% |  1.82 | `sar<int32_t>`                      |
+
+| relative | ns/op |             op/s | err% | total | Compare sar vs builtin >> (int64_t) |
+|---------:|------:|-----------------:|-----:|------:|:------------------------------------|
+|   100.0% |  0.10 | 9,788,159,897.06 | 0.0% |  2.43 | `builtin >> (int64_t)`              |
+|    79.0% |  0.13 | 7,730,263,774.87 | 0.0% |  3.08 | `sar<int64_t>`                      |
+
+| relative | ns/op |              op/s | err% | total | Compare shl vs builtin << (uint32_t) |
+|---------:|------:|------------------:|-----:|------:|:-------------------------------------|
+|   100.0% |  0.05 | 18,319,645,351.49 | 0.1% |  1.82 | `builtin << (uint32_t)`              |
+|   100.0% |  0.05 | 18,316,279,311.77 | 0.1% |  1.82 | `shl<uint32_t>`                      |
+
+| relative | ns/op |              op/s | err% | total | Compare shl vs builtin << (uint64_t) |
+|---------:|------:|------------------:|-----:|------:|:-------------------------------------|
+|   100.0% |  0.09 | 11,383,350,417.65 | 0.1% |  2.09 | `builtin << (uint64_t)`              |
+|    54.9% |  0.16 |  6,246,243,608.04 | 0.1% |  3.81 | `shl<uint64_t>`                      |
+
+| relative | ns/op |              op/s | err% | total | Compare shr vs builtin >> (uint32_t) |
+|---------:|------:|------------------:|-----:|------:|:-------------------------------------|
+|   100.0% |  0.05 | 18,205,070,840.23 | 0.0% |  1.81 | `builtin >> (uint32_t)`              |
+|    99.9% |  0.05 | 18,191,648,662.57 | 0.1% |  1.82 | `shr<uint32_t>`                      |
+
+| relative | ns/op |              op/s | err% | total | Compare shr vs builtin >> (uint64_t) |
+|---------:|------:|------------------:|-----:|------:|:-------------------------------------|
+|   100.0% |  0.09 | 11,300,875,200.65 | 0.0% |  2.11 | `builtin >> (uint64_t)`              |
+|    55.4% |  0.16 |  6,265,789,875.15 | 0.1% |  3.80 | `shr<uint64_t>`                      |
 
 #### WSL-gcc 10.5 (`-O3 -march=native`)
 
@@ -129,6 +159,38 @@ xychart horizontal
 |---------:|------:|-----------------:|-----:|------:|:-------------------------------------|
 |   100.0% |  0.14 | 6,911,629,276.32 | 0.3% |  3.45 | `builtin >> (uint64_t)`              |
 |    33.6% |  0.43 | 2,322,896,134.07 | 0.5% |  9.41 | `sar<uint64_t>`                      |
+
+```mermaid
+---
+config:
+    xyChart:
+        showDataLabel: true
+    yAxis:
+        showLabel: false
+        showAxisLine: false
+---
+xychart-beta horizontal
+title "Mop/s (higher is better)"
+y-axis "Mop/s"
+x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin, 1", "r.shift, i32, sar", "r.shift, i64, builtin, 1", "r.shift, i64, sar", "l.shift, u32, builtin, 1", "l.shift, u32, shl", "l.shift, u64, builtin, 1", "l.shift, u64, shl", "r.shift, u32, builtin, 1", "r.shift, u32, shr", "r.shift, u64, builtin, 1", "r.shift, u64, shr"]
+bar [17956.00, 17753.00, 11801.17, 6300.93, 16799.32, 17604.80, 11796.01, 6301.51, 17649.12, 18143.18, 9788.16, 7730.26, 18319.65, 18316.28, 11383.35, 6246.24, 18205.07, 18191.65, 11300.88, 6265.79]
+```
+
+```mermaid
+---
+config:
+    xyChart:
+        showDataLabel: true
+    yAxis:
+        showLabel: false
+        showAxisLine: false
+---
+xychart-beta horizontal
+title "ns/op (lower is better)"
+y-axis "ns/op"
+x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin, 1", "r.shift, i32, sar", "r.shift, i64, builtin, 1", "r.shift, i64, sar", "l.shift, u32, builtin, 1", "l.shift, u32, shl", "l.shift, u64, builtin, 1", "l.shift, u64, shl", "r.shift, u32, builtin, 1", "r.shift, u32, shr", "r.shift, u64, builtin, 1", "r.shift, u64, shr"]
+bar [0.06, 0.06, 0.08, 0.16, 0.06, 0.06, 0.08, 0.16, 0.06, 0.06, 0.10, 0.13, 0.05, 0.05, 0.09, 0.16, 0.05, 0.05, 0.09, 0.16]
+```
 
 #### WSL-gcc 11.5 (`-O3 -march=native`)
 
@@ -364,7 +426,7 @@ config:
         showLabel: false
         showAxisLine: false
 ---
-xychart horizontal
+xychart-beta horizontal
     title "Mop/s (higher is better)"
     y-axis "Mop/s" 1000 --> 20000
     x-axis ["VS2022, l.shift, u32, builtin", "VS2022, l.shift, u32, sar|sal", "VS2022, l.shift, u64, builtin", "VS2022, l.shift, u64, sar|sal", "VS2022, r.shift, u32, builtin", "VS2022, r.shift, u32, sar|sal", "VS2022, r.shift, u64, builtin", "VS2022, r.shift, u64, sar|sal", "VS2022 (clang-cl), l.shift, u32, builtin", "VS2022 (clang-cl), l.shift, u32, sar|sal", "VS2022 (clang-cl), l.shift, u64, builtin", "VS2022 (clang-cl), l.shift, u64, sar|sal", "VS2022 (clang-cl), r.shift, u32, builtin", "VS2022 (clang-cl), r.shift, u32, sar|sal", "VS2022 (clang-cl), r.shift, u64, builtin", "VS2022 (clang-cl), r.shift, u64, sar|sal", "gcc-10.5, l.shift, u32, builtin", "gcc-10.5, l.shift, u32, sar|sal", "gcc-10.5, l.shift, u64, builtin", "gcc-10.5, l.shift, u64, sar|sal", "gcc-10.5, r.shift, u32, builtin", "gcc-10.5, r.shift, u32, sar|sal", "gcc-10.5, r.shift, u64, builtin", "gcc-10.5, r.shift, u64, sar|sal", "gcc-11.5, l.shift, u32, builtin", "gcc-11.5, l.shift, u32, sar|sal", "gcc-11.5, l.shift, u64, builtin", "gcc-11.5, l.shift, u64, sar|sal", "gcc-11.5, r.shift, u32, builtin", "gcc-11.5, r.shift, u32, sar|sal", "gcc-11.5, r.shift, u64, builtin", "gcc-11.5, r.shift, u64, sar|sal", "gcc-12.4, l.shift, u32, builtin", "gcc-12.4, l.shift, u32, sar|sal", "gcc-12.4, l.shift, u64, builtin", "gcc-12.4, l.shift, u64, sar|sal", "gcc-12.4, r.shift, u32, builtin", "gcc-12.4, r.shift, u32, sar|sal", "gcc-12.4, r.shift, u64, builtin", "gcc-12.4, r.shift, u64, sar|sal", "gcc-13.3, l.shift, u32, builtin", "gcc-13.3, l.shift, u32, sar|sal", "gcc-13.3, l.shift, u64, builtin", "gcc-13.3, l.shift, u64, sar|sal", "gcc-13.3, r.shift, u32, builtin", "gcc-13.3, r.shift, u32, sar|sal", "gcc-13.3, r.shift, u64, builtin", "gcc-13.3, r.shift, u64, sar|sal", "gcc-14.2, l.shift, u32, builtin", "gcc-14.2, l.shift, u32, sar|sal", "gcc-14.2, l.shift, u64, builtin", "gcc-14.2, l.shift, u64, sar|sal", "gcc-14.2, r.shift, u32, builtin", "gcc-14.2, r.shift, u32, sar|sal", "gcc-14.2, r.shift, u64, builtin", "gcc-14.2, r.shift, u64, sar|sal", "gcc-15.2, l.shift, u32, builtin", "gcc-15.2, l.shift, u32, sar|sal", "gcc-15.2, l.shift, u64, builtin", "gcc-15.2, l.shift, u64, sar|sal", "gcc-15.2, r.shift, u32, builtin", "gcc-15.2, r.shift, u32, sar|sal", "gcc-15.2, r.shift, u64, builtin", "gcc-15.2, r.shift, u64, sar|sal", "clang-16.0.6, l.shift, u32, builtin", "clang-16.0.6, l.shift, u32, sar|sal", "clang-16.0.6, l.shift, u64, builtin", "clang-16.0.6, l.shift, u64, sar|sal", "clang-16.0.6, r.shift, u32, builtin", "clang-16.0.6, r.shift, u32, sar|sal", "clang-16.0.6, r.shift, u64, builtin", "clang-16.0.6, r.shift, u64, sar|sal", "clang-17.0.6, l.shift, u32, builtin", "clang-17.0.6, l.shift, u32, sar|sal", "clang-17.0.6, l.shift, u64, builtin", "clang-17.0.6, l.shift, u64, sar|sal", "clang-17.0.6, r.shift, u32, builtin", "clang-17.0.6, r.shift, u32, sar|sal", "clang-17.0.6, r.shift, u64, builtin", "clang-17.0.6, r.shift, u64, sar|sal", "clang-18.1.3, l.shift, u32, builtin", "clang-18.1.3, l.shift, u32, sar|sal", "clang-18.1.3, l.shift, u64, builtin", "clang-18.1.3, l.shift, u64, sar|sal", "clang-18.1.3, r.shift, u32, builtin", "clang-18.1.3, r.shift, u32, sar|sal", "clang-18.1.3, r.shift, u64, builtin", "clang-18.1.3, r.shift, u64, sar|sal", "clang-19.1.1, l.shift, u32, builtin", "clang-19.1.1, l.shift, u32, sar|sal", "clang-19.1.1, l.shift, u64, builtin", "clang-19.1.1, l.shift, u64, sar|sal", "clang-19.1.1, r.shift, u32, builtin", "clang-19.1.1, r.shift, u32, sar|sal", "clang-19.1.1, r.shift, u64, builtin", "clang-19.1.1, r.shift, u64, sar|sal", "clang-20.1.2, l.shift, u32, builtin", "clang-20.1.2, l.shift, u32, sar|sal", "clang-20.1.2, l.shift, u64, builtin", "clang-20.1.2, l.shift, u64, sar|sal", "clang-20.1.2, r.shift, u32, builtin", "clang-20.1.2, r.shift, u32, sar|sal", "clang-20.1.2, r.shift, u64, builtin", "clang-20.1.2, r.shift, u64, sar|sal"]
@@ -382,7 +444,7 @@ config:
         showLabel: false
         showAxisLine: false
 ---
-xychart horizontal
+xychart-beta horizontal
     title "ns/op (lower is better)"
     y-axis "ns/op" 0 --> 1
     x-axis ["VS2022, l.shift, u32, builtin", "VS2022, l.shift, u32, sar|sal", "VS2022, l.shift, u64, builtin", "VS2022, l.shift, u64, sar|sal", "VS2022, r.shift, u32, builtin", "VS2022, r.shift, u32, sar|sal", "VS2022, r.shift, u64, builtin", "VS2022, r.shift, u64, sar|sal", "VS2022 (clang-cl), l.shift, u32, builtin", "VS2022 (clang-cl), l.shift, u32, sar|sal", "VS2022 (clang-cl), l.shift, u64, builtin", "VS2022 (clang-cl), l.shift, u64, sar|sal", "VS2022 (clang-cl), r.shift, u32, builtin", "VS2022 (clang-cl), r.shift, u32, sar|sal", "VS2022 (clang-cl), r.shift, u64, builtin", "VS2022 (clang-cl), r.shift, u64, sar|sal", "gcc-10.5, l.shift, u32, builtin", "gcc-10.5, l.shift, u32, sar|sal", "gcc-10.5, l.shift, u64, builtin", "gcc-10.5, l.shift, u64, sar|sal", "gcc-10.5, r.shift, u32, builtin", "gcc-10.5, r.shift, u32, sar|sal", "gcc-10.5, r.shift, u64, builtin", "gcc-10.5, r.shift, u64, sar|sal", "gcc-11.5, l.shift, u32, builtin", "gcc-11.5, l.shift, u32, sar|sal", "gcc-11.5, l.shift, u64, builtin", "gcc-11.5, l.shift, u64, sar|sal", "gcc-11.5, r.shift, u32, builtin", "gcc-11.5, r.shift, u32, sar|sal", "gcc-11.5, r.shift, u64, builtin", "gcc-11.5, r.shift, u64, sar|sal", "gcc-12.4, l.shift, u32, builtin", "gcc-12.4, l.shift, u32, sar|sal", "gcc-12.4, l.shift, u64, builtin", "gcc-12.4, l.shift, u64, sar|sal", "gcc-12.4, r.shift, u32, builtin", "gcc-12.4, r.shift, u32, sar|sal", "gcc-12.4, r.shift, u64, builtin", "gcc-12.4, r.shift, u64, sar|sal", "gcc-13.3, l.shift, u32, builtin", "gcc-13.3, l.shift, u32, sar|sal", "gcc-13.3, l.shift, u64, builtin", "gcc-13.3, l.shift, u64, sar|sal", "gcc-13.3, r.shift, u32, builtin", "gcc-13.3, r.shift, u32, sar|sal", "gcc-13.3, r.shift, u64, builtin", "gcc-13.3, r.shift, u64, sar|sal", "gcc-14.2, l.shift, u32, builtin", "gcc-14.2, l.shift, u32, sar|sal", "gcc-14.2, l.shift, u64, builtin", "gcc-14.2, l.shift, u64, sar|sal", "gcc-14.2, r.shift, u32, builtin", "gcc-14.2, r.shift, u32, sar|sal", "gcc-14.2, r.shift, u64, builtin", "gcc-14.2, r.shift, u64, sar|sal", "gcc-15.2, l.shift, u32, builtin", "gcc-15.2, l.shift, u32, sar|sal", "gcc-15.2, l.shift, u64, builtin", "gcc-15.2, l.shift, u64, sar|sal", "gcc-15.2, r.shift, u32, builtin", "gcc-15.2, r.shift, u32, sar|sal", "gcc-15.2, r.shift, u64, builtin", "gcc-15.2, r.shift, u64, sar|sal", "clang-16.0.6, l.shift, u32, builtin", "clang-16.0.6, l.shift, u32, sar|sal", "clang-16.0.6, l.shift, u64, builtin", "clang-16.0.6, l.shift, u64, sar|sal", "clang-16.0.6, r.shift, u32, builtin", "clang-16.0.6, r.shift, u32, sar|sal", "clang-16.0.6, r.shift, u64, builtin", "clang-16.0.6, r.shift, u64, sar|sal", "clang-17.0.6, l.shift, u32, builtin", "clang-17.0.6, l.shift, u32, sar|sal", "clang-17.0.6, l.shift, u64, builtin", "clang-17.0.6, l.shift, u64, sar|sal", "clang-17.0.6, r.shift, u32, builtin", "clang-17.0.6, r.shift, u32, sar|sal", "clang-17.0.6, r.shift, u64, builtin", "clang-17.0.6, r.shift, u64, sar|sal", "clang-18.1.3, l.shift, u32, builtin", "clang-18.1.3, l.shift, u32, sar|sal", "clang-18.1.3, l.shift, u64, builtin", "clang-18.1.3, l.shift, u64, sar|sal", "clang-18.1.3, r.shift, u32, builtin", "clang-18.1.3, r.shift, u32, sar|sal", "clang-18.1.3, r.shift, u64, builtin", "clang-18.1.3, r.shift, u64, sar|sal", "clang-19.1.1, l.shift, u32, builtin", "clang-19.1.1, l.shift, u32, sar|sal", "clang-19.1.1, l.shift, u64, builtin", "clang-19.1.1, l.shift, u64, sar|sal", "clang-19.1.1, r.shift, u32, builtin", "clang-19.1.1, r.shift, u32, sar|sal", "clang-19.1.1, r.shift, u64, builtin", "clang-19.1.1, r.shift, u64, sar|sal", "clang-20.1.2, l.shift, u32, builtin", "clang-20.1.2, l.shift, u32, sar|sal", "clang-20.1.2, l.shift, u64, builtin", "clang-20.1.2, l.shift, u64, sar|sal", "clang-20.1.2, r.shift, u32, builtin", "clang-20.1.2, r.shift, u32, sar|sal", "clang-20.1.2, r.shift, u64, builtin", "clang-20.1.2, r.shift, u64, sar|sal"]
