@@ -170,10 +170,10 @@ config:
         showAxisLine: false
 ---
 xychart-beta horizontal
-title "Mop/s (higher is better)"
-y-axis "Mop/s"
-x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin, 1", "r.shift, i32, sar", "r.shift, i64, builtin, 1", "r.shift, i64, sar", "l.shift, u32, builtin, 1", "l.shift, u32, shl", "l.shift, u64, builtin, 1", "l.shift, u64, shl", "r.shift, u32, builtin, 1", "r.shift, u32, shr", "r.shift, u64, builtin, 1", "r.shift, u64, shr"]
-bar [17956.00, 17753.00, 11801.17, 6300.93, 16799.32, 17604.80, 11796.01, 6301.51, 17649.12, 18143.18, 9788.16, 7730.26, 18319.65, 18316.28, 11383.35, 6246.24, 18205.07, 18191.65, 11300.88, 6265.79]
+    title "Mop/s (higher is better)"
+    y-axis "Mop/s" 1000 --> 20000
+    x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin, 1", "r.shift, i32, sar", "r.shift, i64, builtin, 1", "r.shift, i64, sar", "l.shift, u32, builtin, 1", "l.shift, u32, shl", "l.shift, u64, builtin, 1", "l.shift, u64, shl", "r.shift, u32, builtin, 1", "r.shift, u32, shr", "r.shift, u64, builtin, 1", "r.shift, u64, shr"]
+    bar [17956.00, 17753.00, 11801.17, 6300.93, 16799.32, 17604.80, 11796.01, 6301.51, 17649.12, 18143.18, 9788.16, 7730.26, 18319.65, 18316.28, 11383.35, 6246.24, 18205.07, 18191.65, 11300.88, 6265.79]
 ```
 
 ```mermaid
@@ -186,10 +186,10 @@ config:
         showAxisLine: false
 ---
 xychart-beta horizontal
-title "ns/op (lower is better)"
-y-axis "ns/op"
-x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin, 1", "r.shift, i32, sar", "r.shift, i64, builtin, 1", "r.shift, i64, sar", "l.shift, u32, builtin, 1", "l.shift, u32, shl", "l.shift, u64, builtin, 1", "l.shift, u64, shl", "r.shift, u32, builtin, 1", "r.shift, u32, shr", "r.shift, u64, builtin, 1", "r.shift, u64, shr"]
-bar [0.06, 0.06, 0.08, 0.16, 0.06, 0.06, 0.08, 0.16, 0.06, 0.06, 0.10, 0.13, 0.05, 0.05, 0.09, 0.16, 0.05, 0.05, 0.09, 0.16]
+    title "ns/op (lower is better)"
+    y-axis "ns/op" 0 --> 1
+    x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin, 1", "r.shift, i32, sar", "r.shift, i64, builtin, 1", "r.shift, i64, sar", "l.shift, u32, builtin, 1", "l.shift, u32, shl", "l.shift, u64, builtin, 1", "l.shift, u64, shl", "r.shift, u32, builtin, 1", "r.shift, u32, shr", "r.shift, u64, builtin, 1", "r.shift, u64, shr"]
+    bar [0.06, 0.06, 0.08, 0.16, 0.06, 0.06, 0.08, 0.16, 0.06, 0.06, 0.10, 0.13, 0.05, 0.05, 0.09, 0.16, 0.05, 0.05, 0.09, 0.16]
 ```
 
 #### WSL-gcc 11.5 (`-O3 -march=native`)

@@ -98,9 +98,9 @@ def main():
 
     with open(output_filename, 'w', encoding='utf-8') as f:
         f.write('## Graphs\n\n')
-        f.write(mermaid('Mop/s (higher is better)', 'Mop/s', x_data, mop))
+        f.write(mermaid('Mop/s (higher is better)', 'Mop/s', x_data, mop, [1000, 20000]))
         f.write('\n\n')
-        f.write(mermaid('ns/op (lower is better)', 'ns/op', x_data, ns))
+        f.write(mermaid('ns/op (lower is better)', 'ns/op', x_data, ns, [0, 1]))
         f.write('\n')
 
 
