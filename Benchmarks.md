@@ -65,9 +65,9 @@ config:
 ---
 xychart-beta horizontal
 title "Mop/s (higher is better)"
-y-axis "Mop/s" 1000 --> 5000
+y-axis "Mop/s" 1000 --> 3000
 x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin", "r.shift, i32, sar", "r.shift, i64, builtin", "r.shift, i64, sar", "l.shift, u32, builtin, 2", "l.shift, u32, shl", "l.shift, u64, builtin, 2", "l.shift, u64, shl", "r.shift, u32, builtin, 2", "r.shift, u32, shr", "r.shift, u64, builtin, 2", "r.shift, u64, shr"]
-bar [2433, 2111.61, 2413.15, 1889.62, 2434.73, 2124.61, 2438.65, 1516.85, 2438.3, 1516.16, 2271.5, 1511.55, 2454.97, 2126.02, 2415.46, 1895.98, 2451.88, 2139.88, 2450.09, 1517.32]
+bar [2432.99, 2111.61, 2413.15, 1889.62, 2434.73, 2124.61, 2438.65, 1516.85, 2438.29, 1516.16, 2271.50, 1511.55, 2454.97, 2126.02, 2415.46, 1895.98, 2451.88, 2139.88, 2450.09, 1517.32]
 ```
 
 ```mermaid
@@ -85,6 +85,7 @@ y-axis "ns/op" 0 --> 1
 x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin", "r.shift, i32, sar", "r.shift, i64, builtin", "r.shift, i64, sar", "l.shift, u32, builtin, 2", "l.shift, u32, shl", "l.shift, u64, builtin, 2", "l.shift, u64, shl", "r.shift, u32, builtin, 2", "r.shift, u32, shr", "r.shift, u64, builtin, 2", "r.shift, u64, shr"]
 bar [0.41, 0.47, 0.41, 0.53, 0.41, 0.47, 0.41, 0.66, 0.41, 0.66, 0.44, 0.66, 0.41, 0.47, 0.41, 0.53, 0.41, 0.47, 0.41, 0.66]
 ```
+
 
 ### VS 2022 (clang-cl, `/O2 -march=native`)
 
@@ -138,6 +139,38 @@ bar [0.41, 0.47, 0.41, 0.53, 0.41, 0.47, 0.41, 0.66, 0.41, 0.66, 0.44, 0.66, 0.4
 |   100.0% |  0.09 | 11,300,875,200.65 | 0.0% |  2.11 | `builtin >> (uint64_t)`              |
 |    55.4% |  0.16 |  6,265,789,875.15 | 0.1% |  3.80 | `shr<uint64_t>`                      |
 
+```mermaid
+---
+config:
+    xyChart:
+        showDataLabel: true
+    yAxis:
+        showLabel: false
+        showAxisLine: false
+---
+xychart-beta horizontal
+title "Mop/s (higher is better)"
+y-axis "Mop/s" 6000 --> 19000
+x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin", "r.shift, i32, sar", "r.shift, i64, builtin", "r.shift, i64, sar", "l.shift, u32, builtin, 2", "l.shift, u32, shl", "l.shift, u64, builtin, 2", "l.shift, u64, shl", "r.shift, u32, builtin, 2", "r.shift, u32, shr", "r.shift, u64, builtin, 2", "r.shift, u64, shr"]
+bar [17956.00, 17753.00, 11801.17, 6300.93, 16799.32, 17604.80, 11796.01, 6301.51, 17649.12, 18143.18, 9788.16, 7730.26, 18319.65, 18316.28, 11383.35, 6246.24, 18205.07, 18191.65, 11300.88, 6265.79]
+```
+
+```mermaid
+---
+config:
+    xyChart:
+        showDataLabel: true
+    yAxis:
+        showLabel: false
+        showAxisLine: false
+---
+xychart-beta horizontal
+    title "ns/op (lower is better)"
+    y-axis "ns/op" 0 --> 1
+    x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin", "r.shift, i32, sar", "r.shift, i64, builtin", "r.shift, i64, sar", "l.shift, u32, builtin, 2", "l.shift, u32, shl", "l.shift, u64, builtin, 2", "l.shift, u64, shl", "r.shift, u32, builtin, 2", "r.shift, u32, shr", "r.shift, u64, builtin, 2", "r.shift, u64, shr"]
+    bar [0.06, 0.06, 0.08, 0.16, 0.06, 0.06, 0.08, 0.16, 0.06, 0.06, 0.10, 0.13, 0.05, 0.05, 0.09, 0.16, 0.05, 0.05, 0.09, 0.16]
+```
+
 #### WSL-gcc 10.5 (`-O3 -march=native`)
 
 | relative | ns/op |              op/s | err% | total | Compare sal vs builtin << (uint32_t) |
@@ -159,38 +192,6 @@ bar [0.41, 0.47, 0.41, 0.53, 0.41, 0.47, 0.41, 0.66, 0.41, 0.66, 0.44, 0.66, 0.4
 |---------:|------:|-----------------:|-----:|------:|:-------------------------------------|
 |   100.0% |  0.14 | 6,911,629,276.32 | 0.3% |  3.45 | `builtin >> (uint64_t)`              |
 |    33.6% |  0.43 | 2,322,896,134.07 | 0.5% |  9.41 | `sar<uint64_t>`                      |
-
-```mermaid
----
-config:
-    xyChart:
-        showDataLabel: true
-    yAxis:
-        showLabel: false
-        showAxisLine: false
----
-xychart-beta horizontal
-    title "Mop/s (higher is better)"
-    y-axis "Mop/s" 1000 --> 20000
-    x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin, 1", "r.shift, i32, sar", "r.shift, i64, builtin, 1", "r.shift, i64, sar", "l.shift, u32, builtin, 1", "l.shift, u32, shl", "l.shift, u64, builtin, 1", "l.shift, u64, shl", "r.shift, u32, builtin, 1", "r.shift, u32, shr", "r.shift, u64, builtin, 1", "r.shift, u64, shr"]
-    bar [17956.00, 17753.00, 11801.17, 6300.93, 16799.32, 17604.80, 11796.01, 6301.51, 17649.12, 18143.18, 9788.16, 7730.26, 18319.65, 18316.28, 11383.35, 6246.24, 18205.07, 18191.65, 11300.88, 6265.79]
-```
-
-```mermaid
----
-config:
-    xyChart:
-        showDataLabel: true
-    yAxis:
-        showLabel: false
-        showAxisLine: false
----
-xychart-beta horizontal
-    title "ns/op (lower is better)"
-    y-axis "ns/op" 0 --> 1
-    x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin, 1", "r.shift, i32, sar", "r.shift, i64, builtin, 1", "r.shift, i64, sar", "l.shift, u32, builtin, 1", "l.shift, u32, shl", "l.shift, u64, builtin, 1", "l.shift, u64, shl", "r.shift, u32, builtin, 1", "r.shift, u32, shr", "r.shift, u64, builtin, 1", "r.shift, u64, shr"]
-    bar [0.06, 0.06, 0.08, 0.16, 0.06, 0.06, 0.08, 0.16, 0.06, 0.06, 0.10, 0.13, 0.05, 0.05, 0.09, 0.16, 0.05, 0.05, 0.09, 0.16]
-```
 
 #### WSL-gcc 11.5 (`-O3 -march=native`)
 
@@ -505,6 +506,39 @@ xychart-beta horizontal
 |   100.0% |  0.59 | 1,694,401,557.04 | 0.1% | 14.04 | `builtin >> (uint64_t)`              |
 |    77.4% |  0.76 | 1,312,208,048.97 | 0.2% | 18.69 | `shr<uint64_t>`                      |
 
+```mermaid
+---
+config:
+    xyChart:
+        showDataLabel: true
+    yAxis:
+        showLabel: false
+        showAxisLine: false
+---
+xychart-beta horizontal
+title "Mop/s (higher is better)"
+y-axis "Mop/s" 1000 --> 2000
+x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin", "r.shift, i32, sar", "r.shift, i64, builtin", "r.shift, i64, sar", "l.shift, u32, builtin, 2", "l.shift, u32, shl", "l.shift, u64, builtin, 2", "l.shift, u64, shl", "r.shift, u32, builtin, 2", "r.shift, u32, shr", "r.shift, u64, builtin, 2", "r.shift, u64, shr"]
+bar [1729.57, 1054.98, 1696.46, 1292.61, 1726.77, 1483.60, 1721.44, 1318.25, 1706.01, 1053.52, 1695.61, 1048.84, 1734.65, 1054.09, 1687.75, 1298.78, 1558.24, 1376.52, 1694.40, 1312.21]
+```
+
+```mermaid
+---
+config:
+    xyChart:
+        showDataLabel: true
+    yAxis:
+        showLabel: false
+        showAxisLine: false
+---
+xychart-beta horizontal
+title "ns/op (lower is better)"
+y-axis "ns/op" 0 --> 1
+x-axis ["l.shift, u32, builtin, 1", "l.shift, u32, sal", "l.shift, u64, builtin, 1", "l.shift, u64, sal", "r.shift, u32, builtin, 1", "r.shift, u32, sar", "r.shift, u64, builtin, 1", "r.shift, u64, sar", "r.shift, i32, builtin", "r.shift, i32, sar", "r.shift, i64, builtin", "r.shift, i64, sar", "l.shift, u32, builtin, 2", "l.shift, u32, shl", "l.shift, u64, builtin, 2", "l.shift, u64, shl", "r.shift, u32, builtin, 2", "r.shift, u32, shr", "r.shift, u64, builtin, 2", "r.shift, u64, shr"]
+bar [0.58, 0.95, 0.59, 0.77, 0.58, 0.67, 0.58, 0.76, 0.59, 0.95, 0.59, 0.95, 0.58, 0.95, 0.59, 0.77, 0.64, 0.73, 0.59, 0.76]
+```
+
+
 #### macos-13, x64, xcode-15 (AppleClang 15)
 
 | relative | ns/op |             op/s | err% | total | Compare sal vs builtin << (uint32_t) |
@@ -537,10 +571,10 @@ xychart-beta horizontal
 |   100.0% |  0.41 | 2,435,416,378.23 | 8.1% |  9.78 | `builtin >> (int64_t)`              |
 |    95.8% |  0.43 | 2,333,699,990.66 | 7.4% | 11.23 | `sar<int64_t>`                      |
 
-| relative | ns/op |             op/s | err% | total | Compare shl vs builtin << (uint32_t)                                                                              |
-|---------:|------:|-----------------:|-----:|------:|:------------------------------------------------------------------------------------------------------------------|
-|   100.0% |  0.18 | 5,550,813,923.98 | 9.1% |  4.38 | `builtin << (uint32_t)` |
-|    74.9% |  0.24 | 4,158,405,554.26 | 9.8% |  5.17 | `shl<uint32_t>` |
+| relative | ns/op |             op/s | err% | total | Compare shl vs builtin << (uint32_t) |
+|---------:|------:|-----------------:|-----:|------:|:-------------------------------------|
+|   100.0% |  0.18 | 5,550,813,923.98 | 9.1% |  4.38 | `builtin << (uint32_t)`              |
+|    74.9% |  0.24 | 4,158,405,554.26 | 9.8% |  5.17 | `shl<uint32_t>`                      |
 
 | relative | ns/op |             op/s | err% | total | Compare shl vs builtin << (uint64_t) |
 |---------:|------:|-----------------:|-----:|------:|:-------------------------------------|

@@ -5,6 +5,7 @@
 import os
 import re
 import sys
+from math import floor, ceil
 
 
 def split_row(line):
@@ -32,7 +33,7 @@ def variant(label_raw):
 
 
 def label(d, t, v, idx):
-    return f'{d}, {t}, {v}, {idx}' if v == 'builtin' and idx > 0 else f'{d}, {t}, {v}'
+    return f'{d}, {t}, {v}, {idx}' if v == 'builtin' and idx > 0 and t.startswith('u') else f'{d}, {t}, {v}'
 
 
 def mermaid(title, axis_title, xs, ys, yrange=None):
@@ -70,6 +71,7 @@ def main():
     lines = open(input_filename, encoding='utf-8').read().splitlines()
     x_data, mop, ns = [], [], []
     i, n = 0, len(lines)
+    builtin_idx = 2
 
     while i + 3 < n:
         if '| relative' not in lines[i] or '---' not in lines[i + 1] or '|' not in lines[i + 1]:
@@ -90,15 +92,28 @@ def main():
         if len(c1) < 6 or len(c2) < 6: i += 1; continue
 
         v1, v2 = variant(c1[-1]), variant(c2[-1])
-        x_data += [label(d, t, v1, 1), label(d, t, v2, 2)]
+
+        if d == 'l.shift' and t == 'u32' and v1 == 'builtin':
+            if builtin_idx == 1:
+                builtin_idx = 2
+            else:
+                builtin_idx = 1
+
+        x_data += [label(d, t, v1, builtin_idx), label(d, t, v2, 0)]
         ns += [num(c1[1]), num(c2[1])]
         mop += [num(c1[2]) / 1e6, num(c2[2]) / 1e6]
 
         i = r2 + 1
 
     with open(output_filename, 'w', encoding='utf-8') as f:
-        f.write('## Graphs\n\n')
-        f.write(mermaid('Mop/s (higher is better)', 'Mop/s', x_data, mop, [1000, 20000]))
+        min_mop, max_mop = floor(min(mop)), ceil(max(mop))
+
+        div_min_mop, _ = divmod(min_mop, 1000)
+        min_mop = div_min_mop * 1000
+        div_max_mop, _ = divmod(max_mop, 1000)
+        max_mop = (div_max_mop + 1) * 1000
+
+        f.write(mermaid('Mop/s (higher is better)', 'Mop/s', x_data, mop, [min_mop, max_mop]))
         f.write('\n\n')
         f.write(mermaid('ns/op (lower is better)', 'ns/op', x_data, ns, [0, 1]))
         f.write('\n')
