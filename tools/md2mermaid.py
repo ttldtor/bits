@@ -46,6 +46,7 @@ def mermaid(title, axis_title, xs, ys, yrange=None):
         'config:',
         '    xyChart:',
         '        showDataLabel: true',
+        '        width: 1200',
         '    yAxis:',
         '        showLabel: false',
         '        showAxisLine: false',
@@ -106,14 +107,11 @@ def main():
         i = r2 + 1
 
     with open(output_filename, 'w', encoding='utf-8') as f:
-        min_mop, max_mop = floor(min(mop)), ceil(max(mop))
-
-        div_min_mop, _ = divmod(min_mop, 1000)
-        min_mop = div_min_mop * 1000
+        max_mop = ceil(max(mop))
         div_max_mop, _ = divmod(max_mop, 1000)
         max_mop = (div_max_mop + 1) * 1000
 
-        f.write(mermaid('Mop/s (higher is better)', 'Mop/s', x_data, mop, [min_mop, max_mop]))
+        f.write(mermaid('Mop/s (higher is better)', 'Mop/s', x_data, mop, [0, max_mop]))
         f.write('\n\n')
         f.write(mermaid('ns/op (lower is better)', 'ns/op', x_data, ns, [0, 1]))
         f.write('\n')
