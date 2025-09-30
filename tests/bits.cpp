@@ -401,3 +401,327 @@ TEST_CASE("shr - cross-size S and V") {
     CHECK_EQ(shr<std::int16_t, std::uint8_t>(-1, static_cast<std::uint8_t>(15)), static_cast<std::int16_t>(0x0001));
   }
 }
+
+TEST_CASE("andOp - basic invariants") {
+  SUBCASE("identity with all bits set") {
+    CHECK_EQ(andOp<std::uint32_t, std::uint32_t>(0x12345678u, 0xFFFFFFFFu), 0x12345678u);
+    CHECK_EQ(andOp<std::int32_t, std::int32_t>(123, -1), 123);
+  }
+
+  SUBCASE("zero result with 0") {
+    CHECK_EQ(andOp<std::uint32_t, std::uint32_t>(0x12345678u, 0u), 0u);
+    CHECK_EQ(andOp<std::int32_t, std::int32_t>(-456, 0), 0);
+  }
+
+  SUBCASE("same value with itself") {
+    CHECK_EQ(andOp<std::uint32_t, std::uint32_t>(0xDEADBEEFu, 0xDEADBEEFu), 0xDEADBEEFu);
+    CHECK_EQ(andOp<std::int16_t, std::int16_t>(-123, -123), -123);
+  }
+}
+
+TEST_CASE("andOp - same types") {
+  SUBCASE("unsigned types - uint8_t") {
+    CHECK_EQ(andOp<std::uint8_t, std::uint8_t>(0b11110000u, 0b10101010u), static_cast<std::uint8_t>(0b10100000u));
+    CHECK_EQ(andOp<std::uint8_t, std::uint8_t>(0xFFu, 0x0Fu), static_cast<std::uint8_t>(0x0Fu));
+  }
+
+  SUBCASE("unsigned types - uint16_t") {
+    CHECK_EQ(andOp<std::uint16_t, std::uint16_t>(0xF0F0u, 0xFF00u), static_cast<std::uint16_t>(0xF000u));
+    CHECK_EQ(andOp<std::uint16_t, std::uint16_t>(0xABCDu, 0x00FFu), static_cast<std::uint16_t>(0x00CDu));
+  }
+
+  SUBCASE("unsigned types - uint32_t") {
+    CHECK_EQ(andOp<std::uint32_t, std::uint32_t>(0xFFFF0000u, 0x0000FFFFu), 0u);
+    CHECK_EQ(andOp<std::uint32_t, std::uint32_t>(0x12345678u, 0x0F0F0F0Fu), 0x02040608u);
+  }
+
+  SUBCASE("unsigned types - uint64_t") {
+    CHECK_EQ(andOp<std::uint64_t, std::uint64_t>(0xFFFFFFFF00000000ull, 0x00000000FFFFFFFFull), 0ull);
+    CHECK_EQ(andOp<std::uint64_t, std::uint64_t>(0xDEADBEEFCAFEBABEull, 0xFFFFFFFF00000000ull), 0xDEADBEEF00000000ull);
+  }
+
+  SUBCASE("signed types - int8_t") {
+    CHECK_EQ(andOp<std::int8_t, std::int8_t>(0x7F, 0x0F), static_cast<std::int8_t>(0x0F));
+    CHECK_EQ(andOp<std::int8_t, std::int8_t>(-1, 0x55), static_cast<std::int8_t>(0x55));
+  }
+
+  SUBCASE("signed types - int16_t") {
+    CHECK_EQ(andOp<std::int16_t, std::int16_t>(0x7FFF, 0x00FF), static_cast<std::int16_t>(0x00FF));
+    CHECK_EQ(andOp<std::int16_t, std::int16_t>(-1, 0x0F0F), static_cast<std::int16_t>(0x0F0F));
+  }
+
+  SUBCASE("signed types - int32_t") {
+    CHECK_EQ(andOp<std::int32_t, std::int32_t>(0x7FFFFFFF, 0x0000FFFF), 0x0000FFFF);
+    CHECK_EQ(andOp<std::int32_t, std::int32_t>(-1, 0x12345678), 0x12345678);
+  }
+
+  SUBCASE("signed types - int64_t") {
+    CHECK_EQ(andOp<std::int64_t, std::int64_t>(0x7FFFFFFFFFFFFFFFll, 0x00000000FFFFFFFFll), 0x00000000FFFFFFFFll);
+    CHECK_EQ(andOp<std::int64_t, std::int64_t>(-1, 0x123456789ABCDEFll), 0x123456789ABCDEFll);
+  }
+}
+
+TEST_CASE("andOp - different sizes, same signedness") {
+  SUBCASE("unsigned: uint8_t with uint16_t") {
+    CHECK_EQ(andOp<std::uint8_t, std::uint16_t>(0xFFu, 0x00FFu), static_cast<std::uint8_t>(0xFFu));
+    CHECK_EQ(andOp<std::uint16_t, std::uint8_t>(0xABCDu, 0xCDu), static_cast<std::uint16_t>(0x00CDu));
+  }
+
+  SUBCASE("unsigned: uint8_t with uint32_t") {
+    CHECK_EQ(andOp<std::uint8_t, std::uint32_t>(0xF0u, 0x0Fu), static_cast<std::uint8_t>(0u));
+    CHECK_EQ(andOp<std::uint32_t, std::uint8_t>(0x12345678u, 0xFFu), 0x00000078u);
+  }
+
+  SUBCASE("unsigned: uint16_t with uint64_t") {
+    CHECK_EQ(andOp<std::uint16_t, std::uint64_t>(0xFFFFu, 0x0000000000000FFFull), static_cast<std::uint16_t>(0x0FFFu));
+    CHECK_EQ(andOp<std::uint64_t, std::uint16_t>(0xDEADBEEFCAFEBABEull, 0xBABEu), 0x000000000000BABEull);
+  }
+
+  SUBCASE("signed: int8_t with int32_t") {
+    CHECK_EQ(andOp<std::int8_t, std::int32_t>(-1, 0x0F), static_cast<std::int8_t>(0x0F));
+    CHECK_EQ(andOp<std::int32_t, std::int8_t>(0x12345678, 0x0F), 0x00000008);
+  }
+
+  SUBCASE("signed: int16_t with int64_t") {
+    CHECK_EQ(andOp<std::int16_t, std::int64_t>(-1, 0xFFll), static_cast<std::int16_t>(0xFFll));
+    CHECK_EQ(andOp<std::int64_t, std::int16_t>(0x123456789ABCDEFll, 0x0FFF), 0x0000000000000DEFll);
+  }
+}
+
+TEST_CASE("andOp - mixed signedness") {
+  SUBCASE("unsigned with signed: uint8_t with int8_t") {
+    CHECK_EQ(andOp<std::uint8_t, std::int8_t>(0b11111111u, 0b01010101), static_cast<std::uint8_t>(0b01010101u));
+    CHECK_EQ(andOp<std::uint8_t, std::int8_t>(0xFFu, -1), static_cast<std::uint8_t>(0xFFu));
+  }
+
+  SUBCASE("signed with unsigned: int16_t with uint8_t") {
+    CHECK_EQ(andOp<std::int16_t, std::uint8_t>(-1, 0x0Fu), static_cast<std::int16_t>(0x0Fu));
+    CHECK_EQ(andOp<std::int16_t, std::uint8_t>(0x1234, 0xFFu), static_cast<std::int16_t>(0x0034));
+  }
+
+  SUBCASE("unsigned with signed: uint32_t with int16_t") {
+    CHECK_EQ(andOp<std::uint32_t, std::int16_t>(0xFFFFFFFFu, -1), 0xFFFFFFFFu);
+    CHECK_EQ(andOp<std::uint32_t, std::int16_t>(0x12345678u, 0x00FF), 0x00000078u);
+  }
+
+  SUBCASE("signed with unsigned: int32_t with uint16_t") {
+    CHECK_EQ(andOp<std::int32_t, std::uint16_t>(-1, 0xFFFFu), 0x0000FFFF);
+    CHECK_EQ(andOp<std::int32_t, std::uint16_t>(0x12345678, 0xF0F0u), 0x00005070);
+  }
+}
+
+TEST_CASE("orOp - basic invariants") {
+  SUBCASE("identity with 0") {
+    CHECK_EQ(orOp<std::uint32_t, std::uint32_t>(0x12345678u, 0u), 0x12345678u);
+    CHECK_EQ(orOp<std::int32_t, std::int32_t>(123, 0), 123);
+  }
+
+  SUBCASE("all bits set with -1") {
+    CHECK_EQ(orOp<std::uint8_t, std::uint8_t>(0x00u, 0xFFu), static_cast<std::uint8_t>(0xFFu));
+    CHECK_EQ(orOp<std::int32_t, std::int32_t>(0, -1), -1);
+  }
+
+  SUBCASE("same value with itself") {
+    CHECK_EQ(orOp<std::uint32_t, std::uint32_t>(0xDEADBEEFu, 0xDEADBEEFu), 0xDEADBEEFu);
+    CHECK_EQ(orOp<std::int16_t, std::int16_t>(-123, -123), -123);
+  }
+}
+
+TEST_CASE("orOp - same types") {
+  SUBCASE("unsigned types - uint8_t") {
+    CHECK_EQ(orOp<std::uint8_t, std::uint8_t>(0b11110000u, 0b00001111u), static_cast<std::uint8_t>(0b11111111u));
+    CHECK_EQ(orOp<std::uint8_t, std::uint8_t>(0xF0u, 0x0Fu), static_cast<std::uint8_t>(0xFFu));
+  }
+
+  SUBCASE("unsigned types - uint16_t") {
+    CHECK_EQ(orOp<std::uint16_t, std::uint16_t>(0xF0F0u, 0x0F0Fu), static_cast<std::uint16_t>(0xFFFFu));
+    CHECK_EQ(orOp<std::uint16_t, std::uint16_t>(0xAB00u, 0x00CDu), static_cast<std::uint16_t>(0xABCDu));
+  }
+
+  SUBCASE("unsigned types - uint32_t") {
+    CHECK_EQ(orOp<std::uint32_t, std::uint32_t>(0xFFFF0000u, 0x0000FFFFu), 0xFFFFFFFFu);
+    CHECK_EQ(orOp<std::uint32_t, std::uint32_t>(0x12340000u, 0x00005678u), 0x12345678u);
+  }
+
+  SUBCASE("unsigned types - uint64_t") {
+    CHECK_EQ(orOp<std::uint64_t, std::uint64_t>(0xFFFFFFFF00000000ull, 0x00000000FFFFFFFFull), 0xFFFFFFFFFFFFFFFFull);
+    CHECK_EQ(orOp<std::uint64_t, std::uint64_t>(0xDEADBEEF00000000ull, 0x00000000CAFEBABEull), 0xDEADBEEFCAFEBABEull);
+  }
+
+  SUBCASE("signed types - int8_t") {
+    CHECK_EQ(orOp<std::int8_t, std::int8_t>(0x70, 0x0F), static_cast<std::int8_t>(0x7F));
+    CHECK_EQ(orOp<std::int8_t, std::int8_t>(0x10, 0x01), static_cast<std::int8_t>(0x11));
+  }
+
+  SUBCASE("signed types - int16_t") {
+    CHECK_EQ(orOp<std::int16_t, std::int16_t>(0x7F00, 0x00FF), static_cast<std::int16_t>(0x7FFF));
+    CHECK_EQ(orOp<std::int16_t, std::int16_t>(0x00F0, 0x0F00), static_cast<std::int16_t>(0x0FF0));
+  }
+
+  SUBCASE("signed types - int32_t") {
+    CHECK_EQ(orOp<std::int32_t, std::int32_t>(0x7FFF0000, 0x0000FFFF), 0x7FFFFFFF);
+    CHECK_EQ(orOp<std::int32_t, std::int32_t>(0x12340000, 0x00005678), 0x12345678);
+  }
+
+  SUBCASE("signed types - int64_t") {
+    CHECK_EQ(orOp<std::int64_t, std::int64_t>(0x7FFFFFFF00000000ll, 0x00000000FFFFFFFFll), 0x7FFFFFFFFFFFFFFFll);
+    CHECK_EQ(orOp<std::int64_t, std::int64_t>(0x0123456700000000ll, 0x0000000089ABCDEFll), 0x0123456789ABCDEFll);
+  }
+}
+
+TEST_CASE("orOp - different sizes, same signedness") {
+  SUBCASE("unsigned: uint8_t with uint16_t") {
+    CHECK_EQ(orOp<std::uint8_t, std::uint16_t>(0xF0u, 0x000Fu), static_cast<std::uint8_t>(0xFFu));
+    CHECK_EQ(orOp<std::uint16_t, std::uint8_t>(0xAB00u, 0xCDu), static_cast<std::uint16_t>(0xABCDu));
+  }
+
+  SUBCASE("unsigned: uint8_t with uint32_t") {
+    CHECK_EQ(orOp<std::uint8_t, std::uint32_t>(0xF0u, 0x0Fu), static_cast<std::uint8_t>(0xFFu));
+    CHECK_EQ(orOp<std::uint32_t, std::uint8_t>(0x12345600u, 0x78u), 0x12345678u);
+  }
+
+  SUBCASE("unsigned: uint16_t with uint64_t") {
+    CHECK_EQ(orOp<std::uint16_t, std::uint64_t>(0xF000u, 0x0FFFull), static_cast<std::uint16_t>(0xFFFFu));
+    CHECK_EQ(orOp<std::uint64_t, std::uint16_t>(0xFFFFFFFF00000000ull, 0x1234u), 0xFFFFFFFF00001234ull);
+  }
+
+  SUBCASE("signed: int8_t with int32_t") {
+    CHECK_EQ(orOp<std::int8_t, std::int32_t>(0x10, 0x01), static_cast<std::int8_t>(0x11));
+    CHECK_EQ(orOp<std::int32_t, std::int8_t>(0x12345670, 0x08), 0x12345678);
+  }
+
+  SUBCASE("signed: int16_t with int64_t") {
+    CHECK_EQ(orOp<std::int16_t, std::int64_t>(0x00F0, 0x0F00ll), static_cast<std::int16_t>(0x0FF0));
+    CHECK_EQ(orOp<std::int64_t, std::int16_t>(0x123456789ABC0000ll, 0x0DEF), 0x123456789ABC0DEFll);
+  }
+}
+
+TEST_CASE("orOp - mixed signedness") {
+  SUBCASE("unsigned with signed: uint8_t with int8_t") {
+    CHECK_EQ(orOp<std::uint8_t, std::int8_t>(0b11110000u, 0b00001111), static_cast<std::uint8_t>(0b11111111u));
+    CHECK_EQ(orOp<std::uint8_t, std::int8_t>(0x00u, 0x0F), static_cast<std::uint8_t>(0x0Fu));
+  }
+
+  SUBCASE("signed with unsigned: int16_t with uint8_t") {
+    CHECK_EQ(orOp<std::int16_t, std::uint8_t>(0x00F0, 0x0Fu), static_cast<std::int16_t>(0x00FF));
+    CHECK_EQ(orOp<std::int16_t, std::uint8_t>(0x1200, 0x34u), static_cast<std::int16_t>(0x1234));
+  }
+
+  SUBCASE("unsigned with signed: uint32_t with int16_t") {
+    CHECK_EQ(orOp<std::uint32_t, std::int16_t>(0xFFFF0000u, 0x00FF), 0xFFFF00FFu);
+    CHECK_EQ(orOp<std::uint32_t, std::int16_t>(0x12340000u, 0x5678), 0x12345678u);
+  }
+
+  SUBCASE("signed with unsigned: int32_t with uint16_t") {
+    CHECK_EQ(orOp<std::int32_t, std::uint16_t>(0x12340000, 0x5678u), 0x12345678);
+    CHECK_EQ(orOp<std::int32_t, std::uint16_t>(0x00F00000, 0x0F0Fu), 0x00F00F0F);
+  }
+}
+
+TEST_CASE("xorOp - basic invariants") {
+  SUBCASE("identity with 0") {
+    CHECK_EQ(xorOp<std::uint32_t, std::uint32_t>(0x12345678u, 0u), 0x12345678u);
+    CHECK_EQ(xorOp<std::int32_t, std::int32_t>(123, 0), 123);
+  }
+
+  SUBCASE("zero with itself") {
+    CHECK_EQ(xorOp<std::uint32_t, std::uint32_t>(0xDEADBEEFu, 0xDEADBEEFu), 0u);
+    CHECK_EQ(xorOp<std::int16_t, std::int16_t>(-123, -123), 0);
+  }
+
+  SUBCASE("inversion with all bits set") {
+    CHECK_EQ(xorOp<std::uint8_t, std::uint8_t>(0xAAu, 0xFFu), static_cast<std::uint8_t>(0x55u));
+    CHECK_EQ(xorOp<std::int8_t, std::int8_t>(0x55, -1), static_cast<std::int8_t>(0xAA));
+  }
+}
+
+TEST_CASE("xorOp - same types") {
+  SUBCASE("unsigned types - uint8_t") {
+    CHECK_EQ(xorOp<std::uint8_t, std::uint8_t>(0b11110000u, 0b10101010u), static_cast<std::uint8_t>(0b01011010u));
+    CHECK_EQ(xorOp<std::uint8_t, std::uint8_t>(0xFFu, 0xAAu), static_cast<std::uint8_t>(0x55u));
+  }
+
+  SUBCASE("unsigned types - uint16_t") {
+    CHECK_EQ(xorOp<std::uint16_t, std::uint16_t>(0xF0F0u, 0xFF00u), static_cast<std::uint16_t>(0x0FF0u));
+    CHECK_EQ(xorOp<std::uint16_t, std::uint16_t>(0xABCDu, 0xFFFFu), static_cast<std::uint16_t>(0x5432u));
+  }
+
+  SUBCASE("unsigned types - uint32_t") {
+    CHECK_EQ(xorOp<std::uint32_t, std::uint32_t>(0xFFFF0000u, 0x0000FFFFu), 0xFFFFFFFFu);
+    CHECK_EQ(xorOp<std::uint32_t, std::uint32_t>(0x12345678u, 0x0F0F0F0Fu), 0x1D3B5977u);
+  }
+
+  SUBCASE("unsigned types - uint64_t") {
+    CHECK_EQ(xorOp<std::uint64_t, std::uint64_t>(0xFFFFFFFFFFFFFFFFull, 0x12345678u), 0xFFFFFFFFEDCBA987ull);
+    CHECK_EQ(xorOp<std::uint64_t, std::uint64_t>(0xDEADBEEFCAFEBABEull, 0xDEADBEEFCAFEBABEull), 0ull);
+  }
+
+  SUBCASE("signed types - int8_t") {
+    CHECK_EQ(xorOp<std::int8_t, std::int8_t>(0x7F, 0x55), static_cast<std::int8_t>(0x2A));
+    CHECK_EQ(xorOp<std::int8_t, std::int8_t>(-1, 0x55), static_cast<std::int8_t>(0xAA));
+  }
+
+  SUBCASE("signed types - int16_t") {
+    CHECK_EQ(xorOp<std::int16_t, std::int16_t>(0x7FFF, 0x00FF), static_cast<std::int16_t>(0x7F00));
+    CHECK_EQ(xorOp<std::int16_t, std::int16_t>(0x1234, 0x4321), static_cast<std::int16_t>(0x5115));
+  }
+
+  SUBCASE("signed types - int32_t") {
+    CHECK_EQ(xorOp<std::int32_t, std::int32_t>(0x7FFFFFFF, 0x0000FFFF), 0x7FFF0000);
+    CHECK_EQ(xorOp<std::int32_t, std::int32_t>(0x12345678, 0), 0x12345678);
+  }
+
+  SUBCASE("signed types - int64_t") {
+    CHECK_EQ(xorOp<std::int64_t, std::int64_t>(0x7FFFFFFFFFFFFFFFll, 0x00000000FFFFFFFFll), 0x7FFFFFFF00000000ll);
+    CHECK_EQ(xorOp<std::int64_t, std::int64_t>(0x0123456789ABCDEFll, 0x0123456789ABCDEFll), 0ll);
+  }
+}
+
+TEST_CASE("xorOp - different sizes, same signedness") {
+  SUBCASE("unsigned: uint8_t with uint16_t") {
+    CHECK_EQ(xorOp<std::uint8_t, std::uint16_t>(0xFFu, 0x00AAu), static_cast<std::uint8_t>(0x55u));
+    CHECK_EQ(xorOp<std::uint16_t, std::uint8_t>(0xABCDu, 0xFFu), static_cast<std::uint16_t>(0xAB32u));
+  }
+
+  SUBCASE("unsigned: uint8_t with uint32_t") {
+    CHECK_EQ(xorOp<std::uint8_t, std::uint32_t>(0xF0u, 0x0Fu), static_cast<std::uint8_t>(0xFFu));
+    CHECK_EQ(xorOp<std::uint32_t, std::uint8_t>(0x12345678u, 0xFFu), 0x12345687u);
+  }
+
+  SUBCASE("unsigned: uint16_t with uint64_t") {
+    CHECK_EQ(xorOp<std::uint16_t, std::uint64_t>(0xFFFFu, 0x0000000000000FFFull), static_cast<std::uint16_t>(0xF000u));
+    CHECK_EQ(xorOp<std::uint64_t, std::uint16_t>(0xDEADBEEFCAFEBABEull, 0xFFFFu), 0xDEADBEEFCAFE4541ull);
+  }
+
+  SUBCASE("signed: int8_t with int32_t") {
+    CHECK_EQ(xorOp<std::int8_t, std::int32_t>(0x0F, 0x05), static_cast<std::int8_t>(0x0A));
+    CHECK_EQ(xorOp<std::int32_t, std::int8_t>(0x12345678, 0x0F), 0x12345677);
+  }
+
+  SUBCASE("signed: int16_t with int64_t") {
+    CHECK_EQ(xorOp<std::int16_t, std::int64_t>(0x00FF, 0xF000ll), static_cast<std::int16_t>(0xF0FF));
+    CHECK_EQ(xorOp<std::int64_t, std::int16_t>(0x123456789ABC0DEFll, 0x0FFF), 0x123456789ABC0210ll);
+  }
+}
+
+TEST_CASE("xorOp - mixed signedness") {
+  SUBCASE("unsigned with signed: uint8_t with int8_t") {
+    CHECK_EQ(xorOp<std::uint8_t, std::int8_t>(0b11111111u, 0b01010101), static_cast<std::uint8_t>(0b10101010u));
+    CHECK_EQ(xorOp<std::uint8_t, std::int8_t>(0xFFu, -1), static_cast<std::uint8_t>(0x00u));
+  }
+
+  SUBCASE("signed with unsigned: int16_t with uint8_t") {
+    CHECK_EQ(xorOp<std::int16_t, std::uint8_t>(0x00FF, 0xF0u), static_cast<std::int16_t>(0x000F));
+    CHECK_EQ(xorOp<std::int16_t, std::uint8_t>(0x1234, 0xFFu), static_cast<std::int16_t>(0x12CB));
+  }
+
+  SUBCASE("unsigned with signed: uint32_t with int16_t") {
+    CHECK_EQ(xorOp<std::uint32_t, std::int16_t>(0xFFFF0000u, 0x00FF), 0xFFFF00FFu);
+    CHECK_EQ(xorOp<std::uint32_t, std::int16_t>(0x12345678u, -1), 0xEDCBA987u);
+  }
+
+  SUBCASE("signed with unsigned: int32_t with uint16_t") {
+    CHECK_EQ(xorOp<std::int32_t, std::uint16_t>(0x12345678, 0xFFFFu), 0x1234A987);
+    CHECK_EQ(xorOp<std::int32_t, std::uint16_t>(0x00F00F00, 0x0F0Fu), 0x00F0000F);
+  }
+}
