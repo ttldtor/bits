@@ -34,11 +34,13 @@
 *.out
 *.app
 
+*.log
+
 build/
 cmake-build-*/
 .idea/
-/doc/html/
-/doc/latex/
+/docs/html/
+/docs/latex/
 
 .PVS-Studio/
 *.PVS-Studio.*
