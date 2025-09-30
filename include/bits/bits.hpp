@@ -438,7 +438,7 @@ constexpr FirstType xorOp(FirstType first, SecondType second) noexcept {
  * @return `true` if the specified bits are set in the source value.
  */
 template <std::unsigned_integral T>
-constexpr T bitsAreSet(T sourceBits, T bitMaskToCheck) {
+constexpr bool bitsAreSet(T sourceBits, T bitMaskToCheck) {
   return andOp(sourceBits, bitMaskToCheck) != 0;
 }
 
@@ -452,17 +452,15 @@ constexpr T bitsAreSet(T sourceBits, T bitMaskToCheck) {
  * @return `true` if the specified bits are set in the source value.
  */
 template <std::integral SourceBitsType, std::integral BitMaskType>
-constexpr SourceBitsType bitsAreSet(SourceBitsType sourceBits, BitMaskType bitMaskToCheck) {
+constexpr bool bitsAreSet(SourceBitsType sourceBits, BitMaskType bitMaskToCheck) {
   using MaxType = Max<SourceBitsType, BitMaskType>;
 
   if constexpr (std::is_signed_v<SourceBitsType> || std::is_signed_v<BitMaskType>) {
     using MaxUnsignedType = std::make_unsigned_t<MaxType>;
 
-    return static_cast<SourceBitsType>(
-      bitsAreSet(static_cast<MaxUnsignedType>(sourceBits), static_cast<MaxUnsignedType>(bitMaskToCheck)));
+    return bitsAreSet(static_cast<MaxUnsignedType>(sourceBits), static_cast<MaxUnsignedType>(bitMaskToCheck));
   } else {
-    return static_cast<SourceBitsType>(
-      bitsAreSet(static_cast<MaxType>(sourceBits), static_cast<MaxType>(bitMaskToCheck)));
+    return bitsAreSet(static_cast<MaxType>(sourceBits), static_cast<MaxType>(bitMaskToCheck));
   }
 }
 
