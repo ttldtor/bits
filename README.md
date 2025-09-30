@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 
 ## [Benchmarks](./Benchmarks.md)
 
-### A possibly complete, but probably not very useful example of using this library.
+## A possibly complete, but probably not very useful example of using this library.
 <details>
 <summary>
 Color Manipulation Example
