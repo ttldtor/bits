@@ -62,7 +62,6 @@ FILE_PATTERNS          = *.c \
                          *.qsf \
                          *.ice
 RECURSIVE              = YES
-EXCLUDE_PATTERNS       = */isolated/*
 USE_MDFILE_AS_MAINPAGE = ../README.md
 REFERENCED_BY_RELATION = YES
 REFERENCES_RELATION    = YES

@@ -14,9 +14,9 @@
 #include <type_traits>
 
 /**
- * @defgroup bits
- * @{
+ * @defgroup bits Library for bit manipulation.
  */
+/**@{*/
 
 namespace org::ttldtor::bits {
 
@@ -33,12 +33,14 @@ struct MaxImpl<T, U, Ts...> {
 }  // namespace detail
 
 /**
+ * @ingroup bits
  * Returns max type by size (first is better)
  */
 template <typename... Ts>
 using Max = detail::MaxImpl<Ts...>::Type;
 
 /**
+ * @ingroup bits
  * Performs a right arithmetic bit shift operation (`>>` in Java, C, etc.). The sign bit is extended to preserve the
  * signedness of the number.
  *
@@ -57,6 +59,7 @@ template <std::integral ValueType, std::integral ShiftType>
 constexpr ValueType sar(ValueType value, ShiftType shift) noexcept;
 
 /**
+ * @ingroup bits
  * Performs a left arithmetic bit shift operation (`sal`, `<<` in Java, C, etc.). The `shift` is unsigned.
  *
  * The result of the shift will be of the same type as the `value` being shifted.
@@ -82,6 +85,7 @@ constexpr ValueType leftArithmeticShift(ValueType value, UnsignedShiftType shift
 }
 
 /**
+ * @ingroup bits
  * Performs a left arithmetic bit shift operation (`sal`, `<<` in Java, C, etc.). The `shift` is signed.
  *
  * The result of the shift will be of the same type as the `value` being shifted.
@@ -117,6 +121,7 @@ constexpr ValueType leftArithmeticShift(ValueType value, SignedShiftType shift) 
 }
 
 /**
+ * @ingroup bits
  * Performs a left arithmetic bit shift operation (`<<` in Java, C, etc.).
  *
  * The result of the shift will be of the same type as the `value` being shifted.
@@ -136,6 +141,7 @@ constexpr ValueType sal(ValueType value, ShiftType shift) noexcept {
 }
 
 /**
+ * @ingroup bits
  * Performs a right arithmetic bit shift operation (`sar`, `>>` in Java, C, etc.). The `shift` is unsigned.
  * The sign bit is extended to preserve the signedness of the number.
  *
@@ -162,6 +168,7 @@ constexpr ValueType rightArithmeticShift(ValueType value, UnsignedShiftType shif
 }
 
 /**
+ * @ingroup bits
  * Performs a right arithmetic bit shift operation (`sar`, `>>` in Java, C, etc.). The `shift` is signed.
  * The sign bit is extended to preserve the signedness of the number.
  *
@@ -198,6 +205,7 @@ constexpr ValueType rightArithmeticShift(ValueType value, SignedShiftType shift)
 }
 
 /**
+ * @ingroup bits
  * Performs a right arithmetic bit shift operation (`>>` in Java, C, etc.). The sign bit is extended to preserve the
  * signedness of the number.
  *
@@ -218,6 +226,7 @@ constexpr ValueType sar(ValueType value, ShiftType shift) noexcept {
 }
 
 /**
+ * @ingroup bits
  * Performs a right logical bit shift operation (`>>>` in Java). Fills the left bits by zero.
  *
  * The result of the shift will be of the same type as the `value` being shifted.
@@ -235,6 +244,7 @@ template <std::integral ValueType, std::integral ShiftType>
 constexpr ValueType shr(ValueType value, ShiftType shift) noexcept;
 
 /**
+ * @ingroup bits
  * Performs a left logical bit shift operation (`shl`, `<<<`). The `shift` is unsigned.
  *
  * The result of the shift will be of the same type as the `value` being shifted.
@@ -254,6 +264,7 @@ constexpr ValueType leftLogicalShift(ValueType value, UnsignedShiftType shift) n
 }
 
 /**
+ * @ingroup bits
  * Performs a left logical bit shift operation (`shl`, `<<<`). The `shift` is signed.
  *
  * The result of the shift will be of the same type as the `value` being shifted.
@@ -289,6 +300,7 @@ constexpr ValueType leftLogicalShift(ValueType value, SignedShiftType shift) noe
 }
 
 /**
+ * @ingroup bits
  * Performs a left logical bit shift operation (`shl`, `<<<`).
  *
  * The result of the shift will be of the same type as the `value` being shifted.
@@ -308,6 +320,7 @@ constexpr ValueType shl(ValueType value, ShiftType shift) noexcept {
 }
 
 /**
+ * @ingroup bits
  * Performs a right logical bit shift operation (`shr`, `>>>` in Java). The `shift` is unsigned. Fills the left bits by
  * zero.
  *
@@ -335,6 +348,7 @@ constexpr ValueType rightLogicalShift(ValueType value, UnsignedShiftType shift) 
 }
 
 /**
+ * @ingroup bits
  * Performs a right logical bit shift operation (`shr`, `>>>` in Java). The `shift` is signed. Fills the left bits by
  * zero.
  *
@@ -371,6 +385,7 @@ constexpr ValueType rightLogicalShift(ValueType value, SignedShiftType shift) no
 }
 
 /**
+ * @ingroup bits
  * Performs a right logical bit shift operation (`shr`, `>>>` in Java). Fills the left bits by zero.
  *
  * The result of the shift will be of the same type as the `value` being shifted.
@@ -390,6 +405,7 @@ constexpr ValueType shr(ValueType value, ShiftType shift) noexcept {
 }
 
 /**
+ * @ingroup bits
  * Performs a bitwise AND operation between two values of possibly different types
  * and ensures the result is cast back to the type of the first argument.
  *
@@ -407,6 +423,7 @@ constexpr FirstType andOp(FirstType first, SecondType second) noexcept {
 }
 
 /**
+ * @ingroup bits
  * Performs a bitwise OR operation between two values of possibly different types
  * and ensures the result is cast back to the type of the first argument.
  *
@@ -424,6 +441,7 @@ constexpr FirstType orOp(FirstType first, SecondType second) noexcept {
 }
 
 /**
+ * @ingroup bits
  * Performs a bitwise XOR operation between two values of possibly different types
  * and ensures the result is cast back to the type of the first argument.
  *
@@ -441,6 +459,7 @@ constexpr FirstType xorOp(FirstType first, SecondType second) noexcept {
 }
 
 /**
+ * @ingroup bits
  * Determines if the specified bits are set in the source value.
  *
  * @tparam T the type of arguments.
@@ -454,6 +473,7 @@ constexpr bool bitsAreSet(T sourceBits, T bitMaskToCheck) {
 }
 
 /**
+ * @ingroup bits
  * Determines if the specified bits are set in the source value.
  *
  * @tparam SourceBitsType The type of the source bits (e.g., an integer type).
@@ -476,6 +496,7 @@ constexpr bool bitsAreSet(SourceBitsType sourceBits, BitMaskType bitMaskToCheck)
 }
 
 /**
+ * @ingroup bits
  * Sets specific bits in the source value using a bitmask.
  *
  * @tparam T The type of arguments.
@@ -489,6 +510,7 @@ constexpr T setBits(T sourceBits, T bitMaskToSet) {
 }
 
 /**
+ * @ingroup bits
  * Sets specific bits in the source value using a bitmask.
  *
  * @tparam SourceBitsType The type of the source bits (e.g., an integer type).
@@ -512,6 +534,7 @@ constexpr SourceBitsType setBits(SourceBitsType sourceBits, BitMaskType bitMaskT
 }
 
 /**
+ * @ingroup bits
  * Resets (clears) specific bits in a bitmask.
  *
  * @tparam T The type of the source bits and the bitmask. Should be an integral type.
@@ -525,6 +548,7 @@ constexpr T resetBits(T sourceBits, T bitMaskToReset) {
 }
 
 /**
+ * @ingroup bits
  * Resets (clears) specific bits in a bitmask.
  *
  * @tparam SourceBitsType The type of the source bits (e.g., an integer type).
@@ -551,4 +575,4 @@ constexpr SourceBitsType resetBits(SourceBitsType sourceBits, BitMaskType bitMas
 
 }  // namespace org::ttldtor::bits
 
-/** @} */
+/**@}*/

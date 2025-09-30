@@ -40,3 +40,8 @@ if (ORG_TTLDTOR_BITS_BUILD_UNIT_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+option(ORG_TTLDTOR_BITS_BUILD_EXAMPLES "Build examples" ${ORG_TTLDTOR_BITS_IS_ROOT_PROJECT})
+if (ORG_TTLDTOR_BITS_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
