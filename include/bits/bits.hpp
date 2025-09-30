@@ -1,11 +1,22 @@
 ﻿// Copyright (c) 2025 ttldtor.
 // SPDX-License-Identifier: BSL-1.0
 
+/**
+ * @file
+ * @brief Library for bit manipulation.
+ * @author ttldtor
+ */
+
 #pragma once
 
 #include <concepts>
 #include <limits>
 #include <type_traits>
+
+/**
+ * @defgroup bits
+ * @{
+ */
 
 namespace org::ttldtor::bits {
 
@@ -539,3 +550,5 @@ constexpr SourceBitsType resetBits(SourceBitsType sourceBits, BitMaskType bitMas
 }
 
 }  // namespace org::ttldtor::bits
+
+/** @} */
