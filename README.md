@@ -13,7 +13,7 @@ Library for bit manipulation.
 add_rules("mode.debug", "mode.release")
 
 add_repositories("ttldtor https://github.com/ttldtor/xmake-repo.git")
-add_requires("bits v0.2.0")
+add_requires("bits v1.0.0")
 
 target("test_bits")
     set_kind("binary")
@@ -32,7 +32,7 @@ include(FetchContent)
 FetchContent_Declare(
         bits
         GIT_REPOSITORY https://github.com/ttldtor/bits.git
-        GIT_TAG v0.2.0
+        GIT_TAG v1.0.0
 )
 FetchContent_MakeAvailable(bits)
 
