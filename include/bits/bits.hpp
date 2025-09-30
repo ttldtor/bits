@@ -10,9 +10,6 @@
 namespace org::ttldtor::bits {
 
 namespace detail {
-template <typename T, typename U>
-using Gt = std::conditional_t<sizeof(T) >= sizeof(U), T, U>;
-
 template <typename T, typename...>
 struct MaxImpl {
   using Type = T;
@@ -20,7 +17,7 @@ struct MaxImpl {
 
 template <typename T, typename U, typename... Ts>
 struct MaxImpl<T, U, Ts...> {
-  using Type = MaxImpl<Gt<T, U>, Ts...>::Type;
+  using Type = MaxImpl<std::conditional_t<sizeof(T) >= sizeof(U), T, U>, Ts...>::Type;
 };
 }  // namespace detail
 
@@ -64,8 +61,7 @@ constexpr ValueType sar(ValueType value, ShiftType shift) noexcept;
 template <std::integral ValueType, std::unsigned_integral UnsignedShiftType>
 constexpr ValueType leftArithmeticShift(ValueType value, UnsignedShiftType shift) noexcept {
   using UnsignedValueType = std::make_unsigned_t<std::remove_cv_t<ValueType>>;
-  constexpr UnsignedShiftType MAX_VALUE_BITS =
-    static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
+  constexpr auto MAX_VALUE_BITS = static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
 
   if (shift < MAX_VALUE_BITS) {
     return static_cast<ValueType>(static_cast<UnsignedValueType>(value) << shift);
@@ -99,9 +95,8 @@ constexpr ValueType leftArithmeticShift(ValueType value, SignedShiftType shift) 
   }
 
   using UnsignedValueType = std::make_unsigned_t<std::remove_cv_t<ValueType>>;
-  constexpr UnsignedShiftType MAX_VALUE_BITS =
-    static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
-  const UnsignedShiftType unsignedShift = static_cast<UnsignedShiftType>(shift);
+  constexpr auto MAX_VALUE_BITS = static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
+  const auto unsignedShift = static_cast<UnsignedShiftType>(shift);
 
   if (unsignedShift < MAX_VALUE_BITS) {
     return static_cast<ValueType>(static_cast<UnsignedValueType>(value) << unsignedShift);
@@ -146,8 +141,7 @@ constexpr ValueType sal(ValueType value, ShiftType shift) noexcept {
 template <std::integral ValueType, std::unsigned_integral UnsignedShiftType>
 constexpr ValueType rightArithmeticShift(ValueType value, UnsignedShiftType shift) noexcept {
   using UnsignedValueType = std::make_unsigned_t<std::remove_cv_t<ValueType>>;
-  constexpr UnsignedShiftType MAX_VALUE_BITS =
-    static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
+  constexpr auto MAX_VALUE_BITS = static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
 
   if (shift < MAX_VALUE_BITS) {
     return static_cast<ValueType>(value >> shift);
@@ -182,9 +176,8 @@ constexpr ValueType rightArithmeticShift(ValueType value, SignedShiftType shift)
   }
 
   using UnsignedValueType = std::make_unsigned_t<std::remove_cv_t<ValueType>>;
-  constexpr UnsignedShiftType MAX_VALUE_BITS =
-    static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
-  const UnsignedShiftType unsignedShift = static_cast<UnsignedShiftType>(shift);
+  constexpr auto MAX_VALUE_BITS = static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
+  const auto unsignedShift = static_cast<UnsignedShiftType>(shift);
 
   if (unsignedShift < MAX_VALUE_BITS) {
     return static_cast<ValueType>(value >> unsignedShift);
@@ -274,9 +267,8 @@ constexpr ValueType leftLogicalShift(ValueType value, SignedShiftType shift) noe
   }
 
   using UnsignedValueType = std::make_unsigned_t<std::remove_cv_t<ValueType>>;
-  constexpr UnsignedShiftType MAX_VALUE_BITS =
-    static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
-  const UnsignedShiftType unsignedShift = static_cast<UnsignedShiftType>(shift);
+  constexpr auto MAX_VALUE_BITS = static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
+  const auto unsignedShift = static_cast<UnsignedShiftType>(shift);
 
   if (unsignedShift < MAX_VALUE_BITS) {
     return static_cast<ValueType>(static_cast<UnsignedValueType>(value) << unsignedShift);
@@ -322,8 +314,7 @@ constexpr ValueType shl(ValueType value, ShiftType shift) noexcept {
 template <std::integral ValueType, std::unsigned_integral UnsignedShiftType>
 constexpr ValueType rightLogicalShift(ValueType value, UnsignedShiftType shift) noexcept {
   using UnsignedValueType = std::make_unsigned_t<std::remove_cv_t<ValueType>>;
-  constexpr UnsignedShiftType MAX_VALUE_BITS =
-    static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
+  constexpr auto MAX_VALUE_BITS = static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
 
   if (shift < MAX_VALUE_BITS) {
     return static_cast<ValueType>(static_cast<UnsignedValueType>(value) >> shift);
@@ -358,9 +349,8 @@ constexpr ValueType rightLogicalShift(ValueType value, SignedShiftType shift) no
   }
 
   using UnsignedValueType = std::make_unsigned_t<std::remove_cv_t<ValueType>>;
-  constexpr UnsignedShiftType MAX_VALUE_BITS =
-    static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
-  const UnsignedShiftType unsignedShift = static_cast<UnsignedShiftType>(shift);
+  constexpr auto MAX_VALUE_BITS = static_cast<UnsignedShiftType>(std::numeric_limits<UnsignedValueType>::digits);
+  const auto unsignedShift = static_cast<UnsignedShiftType>(shift);
 
   if (unsignedShift < MAX_VALUE_BITS) {
     return static_cast<ValueType>(static_cast<UnsignedValueType>(value) >> shift);
