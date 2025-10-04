@@ -5,7 +5,7 @@ from conan import ConanFile
 
 class bitsConan(ConanFile):
     name = "bits"
-    version = "0.2.0"
+    version = "1.0.0"
     license = "BSL-1.0"
     author = "ttldtor"
     url = "https://github.com/ttldtor/bits"
